@@ -7,12 +7,26 @@ namespace Assets._Project.Scripts.NetworkConnction
 {
     public class NetworkPlayerSpawner : MonoBehaviour
     {
-        [SerializeField] private GameplayController _gameplayController;
         [SerializeField] private PlayerBehaviour _playerPrefab;
+        [Header("Spawn Settings")]
+        [SerializeField] private float _spawnRadius = 3f;
+
+        private PlayerBehaviour _localPlayer;
 
         public void SpawnPlayer(NetworkRunner runner, PlayerRef player)
         {
-            _gameplayController.LocalPlayer = runner.Spawn(_playerPrefab, new Vector3(0, 1, 0), Quaternion.identity, player);
+            _localPlayer = runner.Spawn(_playerPrefab, GetSpawnPosition(), Quaternion.identity, player);
+        }
+
+        public void RespawnLocalPlayer()
+        {
+            _localPlayer.Respawn(GetSpawnPosition(),false);
+        }
+
+        private Vector3 GetSpawnPosition()
+        {
+            var randomPositionOffset = Random.insideUnitCircle * _spawnRadius;
+            return transform.position + new Vector3(randomPositionOffset.x, 0, randomPositionOffset.y);
         }
     }
 }

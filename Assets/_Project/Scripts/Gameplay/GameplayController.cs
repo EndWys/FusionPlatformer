@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.NetworkConnction;
 using Assets._Project.Scripts.Player;
 using Fusion;
 using UnityEngine;
@@ -6,14 +7,13 @@ namespace Assets._Project.Scripts.Gameplay
 {
     public class GameplayController : NetworkBehaviour
     {
+        [SerializeField] private NetworkPlayerSpawner _playerSpawner;
         [SerializeField] private FlagBehaviour _flag;
         [Header("Settings")]
         [SerializeField] private float _gameOverTimeout = 5f;
 
-        [Networked,HideInInspector] public PlayerRef Winner { get; set; }
+        [Networked,HideInInspector] private PlayerRef Winner { get; set; }
         [Networked] private TickTimer _gameOverTimer { get; set; }
-
-        public PlayerBehaviour LocalPlayer { get; set; }
         public bool IsGameFinished => _gameOverTimer.IsRunning;
 
         public override void Spawned()
@@ -29,7 +29,7 @@ namespace Assets._Project.Scripts.Gameplay
 
                 foreach (var playerRef in Runner.ActivePlayers)
                 {
-                    RPC_RespawnPlayer(playerRef, Vector3.up, true);
+                    RPC_RespawnPlayer(playerRef);
                 }
 
                 _gameOverTimer = default;
@@ -44,17 +44,14 @@ namespace Assets._Project.Scripts.Gameplay
             if (Winner != PlayerRef.None)
                 return;
 
-            //if (player.CollectedCoins < MinCoinsToWin)
-            //    return; 
-
             Winner = player.Object.StateAuthority;
             _gameOverTimer = TickTimer.CreateFromSeconds(Runner, _gameOverTimeout);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_RespawnPlayer([RpcTarget] PlayerRef playerRef, Vector3 position, bool resetCoins)
+        private void RPC_RespawnPlayer([RpcTarget] PlayerRef playerRef)
         {
-            LocalPlayer.Respawn(position, resetCoins);
+            _playerSpawner.RespawnLocalPlayer();
         }
     }
 }
