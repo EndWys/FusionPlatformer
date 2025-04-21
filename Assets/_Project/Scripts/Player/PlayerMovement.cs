@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Player.PlayerInput;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
@@ -34,6 +35,12 @@ namespace Assets._Project.Scripts.Player
 
         public override void FixedUpdateNetwork()
         {
+            if (GameplayController.Instance.IsGameFinished)
+            {
+                ProcessInput(default);
+                return;
+            }
+
             if (_kcc.Position.y < -15f)
             {
                 // Player fell, let's respawn

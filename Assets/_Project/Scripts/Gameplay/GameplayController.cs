@@ -1,5 +1,6 @@
 using Assets._Project.Scripts.NetworkConnction;
 using Assets._Project.Scripts.Player;
+using Assets._Project.Scripts.UI;
 using Fusion;
 using UnityEngine;
 
@@ -7,6 +8,9 @@ namespace Assets._Project.Scripts.Gameplay
 {
     public class GameplayController : NetworkBehaviour
     {
+        public static GameplayController Instance {  get; private set; }
+
+        [SerializeField] private GameLevelUIController _levelUI;
         [SerializeField] private NetworkPlayerSpawner _playerSpawner;
         [SerializeField] private FlagBehaviour _flag;
         [Header("Settings")]
@@ -18,6 +22,8 @@ namespace Assets._Project.Scripts.Gameplay
 
         public override void Spawned()
         {
+            Instance = this;
+
             _flag.OnFlagReached.AddListener(OnFlagReached);
         }
 
@@ -25,15 +31,22 @@ namespace Assets._Project.Scripts.Gameplay
         {
             if (_gameOverTimer.Expired(Runner))
             {
-                Winner = PlayerRef.None;
-
-                foreach (var playerRef in Runner.ActivePlayers)
-                {
-                    RPC_RespawnPlayer(playerRef);
-                }
-
-                _gameOverTimer = default;
+                ResetGame();
             }
+        }
+
+        private void ResetGame()
+        {
+            Winner = PlayerRef.None;
+
+            _levelUI.ShowWinner(false);
+
+            foreach (var playerRef in Runner.ActivePlayers)
+            {
+                RPC_RespawnPlayer(playerRef);
+            }
+
+            _gameOverTimer = default;
         }
 
         private void OnFlagReached(PlayerBehaviour player)
@@ -44,8 +57,15 @@ namespace Assets._Project.Scripts.Gameplay
             if (Winner != PlayerRef.None)
                 return;
 
+            OnWin(player);
+        }
+
+        private void OnWin(PlayerBehaviour player)
+        {
             Winner = player.Object.StateAuthority;
             _gameOverTimer = TickTimer.CreateFromSeconds(Runner, _gameOverTimeout);
+
+            _levelUI.ShowWinner(true, player.Nickname);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
