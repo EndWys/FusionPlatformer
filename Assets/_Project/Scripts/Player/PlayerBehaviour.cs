@@ -1,10 +1,15 @@
 using Fusion;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerBehaviour : NetworkBehaviour
+namespace Assets._Project.Scripts.Player
 {
-    [SerializeField] private Transform CameraPivot;
-    [SerializeField] private Transform CameraHandle;
+    public class PlayerBehaviour : NetworkBehaviour
+    {
+        [SerializeField] private PlayerMovement _movement;
+
+        public void Respawn(Vector3 position, bool resetCoins)
+        {
+            _movement.Respawn(position);
+        }
+    }
 }

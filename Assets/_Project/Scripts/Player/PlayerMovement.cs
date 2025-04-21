@@ -32,10 +32,14 @@ namespace Assets._Project.Scripts.Player
         private Vector3 _moveVelocity;
         private bool _isJumping;
 
-
-
         public override void FixedUpdateNetwork()
         {
+            if (_kcc.Position.y < -15f)
+            {
+                // Player fell, let's respawn
+                Respawn(Vector3.up);
+            }
+
             ProcessInput(_input.CurrentInput);
 
             if (_kcc.IsGrounded)
@@ -45,6 +49,14 @@ namespace Assets._Project.Scripts.Player
             }
 
             _input.ResetInput();
+        }
+
+        public void Respawn(Vector3 position)
+        {
+            _kcc.SetPosition(position);
+            _kcc.SetLookRotation(0f, 0f);
+
+            _moveVelocity = Vector3.zero;
         }
 
         private void LateUpdate()
