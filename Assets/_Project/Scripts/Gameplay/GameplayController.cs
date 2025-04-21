@@ -39,7 +39,7 @@ namespace Assets._Project.Scripts.Gameplay
         {
             Winner = PlayerRef.None;
 
-            _levelUI.ShowWinner(false);
+            RPC_ShowWinner(false);
 
             foreach (var playerRef in Runner.ActivePlayers)
             {
@@ -51,6 +51,8 @@ namespace Assets._Project.Scripts.Gameplay
 
         private void OnFlagReached(PlayerBehaviour player)
         {
+            RPC_ShowWinner(true);
+
             if (HasStateAuthority == false)
                 return;
 
@@ -64,14 +66,18 @@ namespace Assets._Project.Scripts.Gameplay
         {
             Winner = player.Object.StateAuthority;
             _gameOverTimer = TickTimer.CreateFromSeconds(Runner, _gameOverTimeout);
-
-            _levelUI.ShowWinner(true, player.Nickname);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPC_RespawnPlayer([RpcTarget] PlayerRef playerRef)
         {
             _playerSpawner.RespawnLocalPlayer();
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_ShowWinner(bool show)
+        {
+            _levelUI.ShowWinner(show, "");
         }
     }
 }
