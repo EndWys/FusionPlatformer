@@ -10,6 +10,7 @@ namespace Assets._Project.Scripts.Player
     {
         [SerializeField] private SimpleKCC _kcc;
         [SerializeReference] private BasePlayerInputHandler _input;
+        [SerializeReference] private PlayerAnimator _animator;
 
         [Header("Camera")]
         [SerializeField] private Transform CameraPivot;
@@ -56,6 +57,11 @@ namespace Assets._Project.Scripts.Player
             }
 
             _input.ResetInput();
+        }
+
+        public override void Render()
+        {
+            _animator.SetAnimations(_kcc.RealSpeed, _kcc.IsGrounded);
         }
 
         public void Respawn(Vector3 position)

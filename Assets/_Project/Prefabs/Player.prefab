@@ -528,6 +528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6445258177744672385}
   - component: {fileID: 6683216537583032228}
+  - component: {fileID: 3453460018275469639}
   - component: {fileID: 6441517414128780108}
   - component: {fileID: 7413724594784011812}
   - component: {fileID: 7771203508501040270}
@@ -570,6 +571,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _movement: {fileID: 6441517414128780108}
+  _Nickname: 
+--- !u!114 &3453460018275469639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8018530399959023869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 540fb1d491da8e9458c9c33b2b95f798, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 4899990938898458274}
 --- !u!114 &6441517414128780108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -584,6 +599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _kcc: {fileID: 7771203508501040270}
   _input: {fileID: 7413724594784011812}
+  _animator: {fileID: 3453460018275469639}
   CameraPivot: {fileID: 620368852412504968}
   CameraHandle: {fileID: 3496899474361682494}
   _jumpImpulse: 10
