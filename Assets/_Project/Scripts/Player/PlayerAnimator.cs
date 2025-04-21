@@ -15,7 +15,7 @@ namespace Assets._Project.Scripts.Player
             _animIDGrounded = Animator.StringToHash("Grounded");
         }
 
-        public void SetAnimations(float speed, bool isGrounded)
+        public void SetMovementAnimations(float speed, bool isGrounded)
         {
             _animator.SetFloat(_animIDSpeed, speed);
             _animator.SetBool(_animIDGrounded, isGrounded);

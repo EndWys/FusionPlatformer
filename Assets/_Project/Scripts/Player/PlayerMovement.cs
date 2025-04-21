@@ -11,6 +11,7 @@ namespace Assets._Project.Scripts.Player
         [SerializeField] private SimpleKCC _kcc;
         [SerializeReference] private BasePlayerInputHandler _input;
         [SerializeReference] private PlayerAnimator _animator;
+        [SerializeReference] private PlayerSounds _sounds;
 
         [Header("Camera")]
         [SerializeField] private Transform CameraPivot;
@@ -30,9 +31,10 @@ namespace Assets._Project.Scripts.Player
         [SerializeField] private float _groundDeceleration = 25f;
         [SerializeField] private float _groundAcceleration = 55f;
 
+        [Networked, OnChangedRender(nameof(OnJumpingChanged))]
+        private NetworkBool _isJumping { get; set; }
 
         private Vector3 _moveVelocity;
-        private bool _isJumping;
 
         public override void FixedUpdateNetwork()
         {
@@ -61,7 +63,8 @@ namespace Assets._Project.Scripts.Player
 
         public override void Render()
         {
-            _animator.SetAnimations(_kcc.RealSpeed, _kcc.IsGrounded);
+            _animator.SetMovementAnimations(_kcc.RealSpeed, _kcc.IsGrounded);
+            _sounds.SetSoundsSettings(_kcc.RealSpeed, _sprintSpeed,_kcc.IsGrounded);
         }
 
         public void Respawn(Vector3 position)
@@ -122,6 +125,21 @@ namespace Assets._Project.Scripts.Player
 
 
             _kcc.Move(_moveVelocity, jumpImpulse);
+        }
+
+
+        private void OnJumpingChanged()
+        {
+            if (_isJumping)
+            {
+                _sounds.PlayJump();
+                
+            }
+            else
+            {
+                _sounds.PlayLand();
+
+            }
         }
     }
 }
