@@ -1,0 +1,102 @@
+using Assets._Project.Scripts.Player.PlayerInput;
+using Fusion;
+using Fusion.Addons.SimpleKCC;
+using UnityEngine;
+
+namespace Assets._Project.Scripts.Player
+{
+    public class PlayerMovement : NetworkBehaviour
+    {
+        [SerializeField] private SimpleKCC _kcc;
+        [SerializeReference] private BasePlayerInputHandler _input;
+
+        [Header("Camera")]
+        [SerializeField] private Transform CameraPivot;
+        [SerializeField] private Transform CameraHandle;
+
+        [Header("Jump Settings")]
+        [SerializeField] private float _jumpImpulse = 10f;
+        [SerializeField] private float _upperGravity = 25f;
+        [SerializeField] private float _downGravity = 40f;
+        [SerializeField] private float _airDeceleration = 1.3f;
+        [SerializeField] private float _airAcceleration = 25f;
+
+        [Header("Walk Settings")]
+        [SerializeField] private float _walkSpeed = 2f;
+        [SerializeField] private float _sprintSpeed = 5f;
+        [SerializeField] private float _rotationSpeed = 8f;
+        [SerializeField] private float _groundDeceleration = 25f;
+        [SerializeField] private float _groundAcceleration = 55f;
+
+
+        private Vector3 _moveVelocity;
+        private bool _isJumping;
+
+
+
+        public override void FixedUpdateNetwork()
+        {
+            ProcessInput(_input.CurrentInput);
+
+            if (_kcc.IsGrounded)
+            {
+                // Stop jumping
+                _isJumping = false;
+            }
+
+            _input.ResetInput();
+        }
+
+        private void LateUpdate()
+        {
+            // Only local player needs to update the camera
+            if (HasStateAuthority == false)
+                return;
+
+            // Update camera pivot and transfer properties from camera handle to Main Camera.
+            CameraPivot.rotation = Quaternion.Euler(_input.CurrentInput.LookRotation);
+            Camera.main.transform.SetPositionAndRotation(CameraHandle.position, CameraHandle.rotation);
+        }
+
+        private void ProcessInput(GameplayInput input)
+        {
+            float jumpImpulse = 0f;
+
+            if (_kcc.IsGrounded && input.Jump)
+            {
+                jumpImpulse = _jumpImpulse;
+                _isJumping = true;
+            }
+
+            _kcc.SetGravity(-(_kcc.RealVelocity.y >= 0f ? _upperGravity : _downGravity));
+
+            float speed = input.Sprint ? _sprintSpeed : _walkSpeed;
+
+            var lookRotation = Quaternion.Euler(0f, input.LookRotation.y, 0f);
+
+            var moveDirection = lookRotation * new Vector3(input.MoveDirection.x, 0f, input.MoveDirection.y);
+            var desiredMoveVelocity = moveDirection * speed;
+
+            float acceleration;
+            if (desiredMoveVelocity == Vector3.zero)
+            {
+                acceleration = _kcc.IsGrounded ? _groundDeceleration : _airDeceleration;
+            }
+            else
+            {
+                var currentRotation = _kcc.TransformRotation;
+                var targetRotation = Quaternion.LookRotation(moveDirection);
+                var nextRotation = Quaternion.Lerp(currentRotation, targetRotation, _rotationSpeed * Runner.DeltaTime);
+
+                _kcc.SetLookRotation(nextRotation.eulerAngles);
+
+                acceleration = _kcc.IsGrounded ? _groundAcceleration : _airAcceleration;
+            }
+
+            _moveVelocity = Vector3.Lerp(_moveVelocity, desiredMoveVelocity, acceleration * Runner.DeltaTime);
+
+
+            _kcc.Move(_moveVelocity, jumpImpulse);
+        }
+    }
+}
