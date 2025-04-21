@@ -38,6 +38,9 @@ namespace Assets._Project.Scripts.Player
 
         public override void FixedUpdateNetwork()
         {
+            if (GameplayController.Instance == null)
+                return;
+
             if (GameplayController.Instance.IsGameFinished)
             {
                 ProcessInput(default);
@@ -133,7 +136,7 @@ namespace Assets._Project.Scripts.Player
             if (_isJumping)
             {
                 _sounds.PlayJump();
-                
+
             }
             else
             {
