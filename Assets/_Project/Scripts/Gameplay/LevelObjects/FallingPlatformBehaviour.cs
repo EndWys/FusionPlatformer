@@ -1,7 +1,4 @@
 using Fusion;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects

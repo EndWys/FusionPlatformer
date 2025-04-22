@@ -1,4 +1,3 @@
-using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Player;
 using Fusion;
 using UnityEngine;
