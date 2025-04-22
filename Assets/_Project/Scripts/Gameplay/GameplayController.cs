@@ -75,7 +75,7 @@ namespace Assets._Project.Scripts.Gameplay
             Winner = player.Object.StateAuthority;
             _gameOverTimer = TickTimer.CreateFromSeconds(Runner, _gameOverTimeout);
 
-            RPC_ShowWinner(true);
+            RPC_ShowWinner(true, player.Nickname);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -85,9 +85,9 @@ namespace Assets._Project.Scripts.Gameplay
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_ShowWinner(bool show)
+        private void RPC_ShowWinner(bool show, string name = "")
         {
-            _levelUI.ShowWinner(show, "");
+            _levelUI.ShowWinner(show, name);
         }
     }
 }

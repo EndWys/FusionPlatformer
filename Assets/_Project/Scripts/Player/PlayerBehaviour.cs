@@ -1,6 +1,7 @@
 using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.NetworkConnction;
+using Assets._Project.Scripts.UI;
 using Fusion;
 using UnityEngine;
 
@@ -9,9 +10,16 @@ namespace Assets._Project.Scripts.Player
     public class PlayerBehaviour : NetworkBehaviour
     {
         [SerializeField] private PlayerMovement _movement;
+        [SerializeField] private PlayerNameplate _nameplate;
 
-        [Networked, OnChangedRender(nameof(OnCoinsAmountChanged))] private int _collectedCoins { get; set; }
 
+        [Networked, HideInInspector, Capacity(24), OnChangedRender(nameof(OnNicknameChanged))]
+        private string _nickname { get; set; }
+
+        [Networked, OnChangedRender(nameof(OnCoinsAmountChanged))] 
+        private int _collectedCoins { get; set; }
+
+        public string Nickname => _nickname;
         public int CollectedCoins => _collectedCoins;
 
         private IRespawner _parentSpawner;
@@ -21,6 +29,19 @@ namespace Assets._Project.Scripts.Player
             _parentSpawner = spawner;
 
             _movement.OnFallOut.AddListener(() => _parentSpawner.RespawnLocalPlayer(resetCoins: false));
+        }
+
+        public override void Spawned()
+        {
+            if (HasStateAuthority)
+            {
+                // Set player nickname that is saved in UIGameMenu
+                _nickname = PlayerPrefs.GetString("PlayerName");
+            }
+
+            // In case the nickname is already changed,
+            // we need to trigger the change manually
+            OnNicknameChanged();
         }
 
         public void Respawn(Vector3 position, bool resetCoins)
@@ -47,6 +68,14 @@ namespace Assets._Project.Scripts.Player
         private void OnCoinsAmountChanged()
         {
             GameplayController.Instance.OnCoinChanged(_collectedCoins);
+        }
+
+        private void OnNicknameChanged()
+        {
+            if (HasStateAuthority)
+                return; // Do not show nickname for local player
+
+            _nameplate.SetNickname(_nickname);
         }
     }
 }

@@ -23,18 +23,7 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         private ConnectionState connectionState = ConnectionState.Disconnected;
 
-        private void OnGUI()
-        {
-            if (connectionState != ConnectionState.Disconnected)
-                return;
-            
-            if (GUI.Button(new Rect(0, 0, 200, 40), "Join"))
-            {
-                StartGame(GameMode.Shared);
-            }
-        }
-
-        private async void StartGame(GameMode mode)
+        public async void StartGame(GameMode mode,Action OnConnectionFinished, string roomName)
         {
             connectionState = ConnectionState.Connecting;
 
@@ -50,12 +39,15 @@ namespace Assets._Project.Scripts.NetworkConnction
             var result = await _runner.StartGame(new StartGameArgs()
             {
                 GameMode = mode,
-                SessionName = "TestRoom",
+                SessionName = roomName,
                 Scene = scene,
                 SceneManager = _sceneManager
             });
 
             connectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
+
+            if(connectionState == ConnectionState.Connected)
+                OnConnectionFinished.Invoke();
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
