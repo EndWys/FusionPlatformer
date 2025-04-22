@@ -47,6 +47,7 @@ namespace Assets._Project.Scripts.Player
             if (GameplayController.Instance.IsGameFinished)
             {
                 ProcessInput(default);
+                _input.ResetInput();
                 return;
             }
 
