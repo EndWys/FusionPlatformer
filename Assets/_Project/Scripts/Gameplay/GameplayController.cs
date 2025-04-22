@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.NetworkConnction;
 using Assets._Project.Scripts.Player;
 using Assets._Project.Scripts.UI;
@@ -51,11 +52,6 @@ namespace Assets._Project.Scripts.Gameplay
 
         private void OnFlagReached(PlayerBehaviour player)
         {
-            RPC_ShowWinner(true);
-
-            if (HasStateAuthority == false)
-                return;
-
             if (Winner != PlayerRef.None)
                 return;
 
@@ -66,6 +62,8 @@ namespace Assets._Project.Scripts.Gameplay
         {
             Winner = player.Object.StateAuthority;
             _gameOverTimer = TickTimer.CreateFromSeconds(Runner, _gameOverTimeout);
+
+            RPC_ShowWinner(true);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
