@@ -1,0 +1,88 @@
+using Fusion.Sockets;
+using Fusion;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+namespace Assets._Project.Scripts.NetworkConnction
+{
+    public enum ConnectionState
+    {
+        Disconnected,
+        Connecting,
+        Connected,
+    }
+
+    public class NetworkController : MonoBehaviour, INetworkRunnerCallbacks
+    {
+        [SerializeField] private NetworkRunner _runner;
+        [SerializeField] private NetworkSceneManagerDefault _sceneManager;
+
+        [SerializeField] private NetworkPlayerSpawner _playerSpawner;
+
+        private ConnectionState connectionState = ConnectionState.Disconnected;
+
+        private void OnGUI()
+        {
+            if (connectionState != ConnectionState.Disconnected)
+                return;
+            
+            if (GUI.Button(new Rect(0, 0, 200, 40), "Join"))
+            {
+                StartGame(GameMode.Shared);
+            }
+        }
+
+        private async void StartGame(GameMode mode)
+        {
+            connectionState = ConnectionState.Connecting;
+
+            _runner.ProvideInput = true;
+
+            var scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
+            var sceneInfo = new NetworkSceneInfo();
+            if (scene.IsValid)
+            {
+                sceneInfo.AddSceneRef(scene, LoadSceneMode.Single);
+            }
+
+            var result = await _runner.StartGame(new StartGameArgs()
+            {
+                GameMode = mode,
+                SessionName = "TestRoom",
+                Scene = scene,
+                SceneManager = _sceneManager
+            });
+
+            connectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
+        }
+
+        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
+        {
+            if (player != runner.LocalPlayer)
+                return;
+
+            _playerSpawner.SpawnPlayer(runner, player);
+            
+        }
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+        public void OnInput(NetworkRunner runner, NetworkInput input) { }
+        public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+        public void OnConnectedToServer(NetworkRunner runner) { }
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
+        public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
+        public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+        public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
+        public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
+        public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+        public void OnSceneLoadDone(NetworkRunner runner) { }
+        public void OnSceneLoadStart(NetworkRunner runner) { }
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
+    }
+}
