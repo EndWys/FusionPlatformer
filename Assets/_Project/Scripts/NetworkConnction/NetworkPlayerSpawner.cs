@@ -5,7 +5,11 @@ using UnityEngine;
 
 namespace Assets._Project.Scripts.NetworkConnction
 {
-    public class NetworkPlayerSpawner : MonoBehaviour
+    public interface IRespawner
+    {
+        public void RespawnLocalPlayer(bool resetCoins);
+    }
+    public class NetworkPlayerSpawner : MonoBehaviour, IRespawner
     {
         [SerializeField] private PlayerBehaviour _playerPrefab;
         [Header("Spawn Settings")]
@@ -18,9 +22,9 @@ namespace Assets._Project.Scripts.NetworkConnction
             _localPlayer = runner.Spawn(_playerPrefab, GetSpawnPosition(), Quaternion.identity, player);
         }
 
-        public void RespawnLocalPlayer()
+        public void RespawnLocalPlayer(bool resetCoins)
         {
-            _localPlayer.Respawn(GetSpawnPosition(),false);
+            _localPlayer.Respawn(GetSpawnPosition(), resetCoins);
         }
 
         private Vector3 GetSpawnPosition()

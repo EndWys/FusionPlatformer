@@ -3,6 +3,7 @@ using Assets._Project.Scripts.Player.PlayerInput;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.Player
 {
@@ -34,6 +35,8 @@ namespace Assets._Project.Scripts.Player
         [Networked, OnChangedRender(nameof(OnJumpingChanged))]
         private NetworkBool _isJumping { get; set; }
 
+        [HideInInspector] public UnityEvent OnFallOut;
+
         private Vector3 _moveVelocity;
 
         public override void FixedUpdateNetwork()
@@ -50,7 +53,7 @@ namespace Assets._Project.Scripts.Player
             if (_kcc.Position.y < -15f)
             {
                 // Player fell, let's respawn
-                Respawn(Vector3.up);
+                OnFallOut.Invoke();
             }
 
             ProcessInput(_input.CurrentInput);
