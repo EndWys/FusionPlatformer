@@ -19,6 +19,7 @@ namespace Assets._Project.Scripts.NetworkConnction
         public void SpawnPlayer(NetworkRunner runner, PlayerRef player)
         {
             _localPlayer = runner.Spawn(_playerPrefab, GetSpawnPosition(), Quaternion.identity, player);
+            _localPlayer.Init(this);
         }
 
         public void RespawnLocalPlayer(bool resetCoins)
