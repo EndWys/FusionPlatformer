@@ -14,10 +14,11 @@ namespace Assets._Project.Scripts.Gameplay
         [SerializeField] private GameLevelUIController _levelUI;
         [SerializeField] private NetworkPlayerSpawner _playerSpawner;
         [SerializeField] private FlagBehaviour _flag;
+
         [Header("Settings")]
         [SerializeField] private float _gameOverTimeout = 5f;
 
-        [Networked,HideInInspector] private PlayerRef Winner { get; set; }
+        [Networked] private PlayerRef Winner { get; set; }
         [Networked] private TickTimer _gameOverTimer { get; set; }
         public bool IsGameFinished => _gameOverTimer.IsRunning;
 

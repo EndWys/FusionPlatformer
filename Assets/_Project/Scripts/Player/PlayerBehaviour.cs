@@ -9,10 +9,7 @@ namespace Assets._Project.Scripts.Player
         [SerializeField] private PlayerMovement _movement;
 
         [Networked]
-        public int CollectedCoins { get; set; }
-
-        [Networked, HideInInspector, Capacity(24)]
-        public string Nickname { get; set; }
+        private int CollectedCoins { get; set; }
 
         public void Respawn(Vector3 position, bool resetCoins)
         {
@@ -22,7 +19,7 @@ namespace Assets._Project.Scripts.Player
         private void OnTriggerEnter(Collider other)
         {
             //Coins collecting
-            if (HasStateAuthority == false)
+            if (!HasStateAuthority)
                 return;
 
             if (other.TryGetComponent(out CoinBehavour coin))

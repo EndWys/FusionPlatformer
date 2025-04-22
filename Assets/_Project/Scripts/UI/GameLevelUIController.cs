@@ -9,7 +9,6 @@ namespace Assets._Project.Scripts.UI
     {
         [SerializeField] private TextMeshProUGUI _winnerText;
 
-        private PlayerBehaviour _localPlayer;
         public void ShowWinner(bool show, string name = "")
         {
             _winnerText.gameObject.SetActive(show);

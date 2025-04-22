@@ -13,7 +13,7 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         [SerializeField] private GameObject _visualRoot;
 
         [Header("Timer")]
-        public float _coinRespawnTime = 4f;
+        [SerializeField] private float _coinRespawnTime = 4f;
 
         [Networked] private TickTimer _activationCooldown { get; set; }
 
