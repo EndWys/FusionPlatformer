@@ -22,8 +22,6 @@ namespace Assets._Project.Scripts.UI
         [SerializeField] private CanvasGroup _root;
 
         private bool _isOpened = true;
-        private bool _disconnetingInProgress = false;
-        private bool _connected = false;
 
         private void Awake()
         {
@@ -44,22 +42,25 @@ namespace Assets._Project.Scripts.UI
 
         private async void DisconnectClick()
         {
-            _disconnetingInProgress = true;
             await _networkController.Disconnect();
         }
 
         private void Update()
         {
-            if (_disconnetingInProgress)
-                return;
-
-            if (!_connected)
+            if (_networkController.ConnectionState == ConnectionState.Connecting || _networkController.ConnectionState == ConnectionState.Disconnecting)
                 return;
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Escape))
             {
                 ToggleVisibility();
             }
+        }
+
+        private void ToggleVisibility()
+        {
+            _isOpened = !_isOpened;
+
+            _root.alpha = _isOpened ? 1 : 0;
 
             if (_isOpened)
             {
@@ -73,13 +74,6 @@ namespace Assets._Project.Scripts.UI
             }
         }
 
-        private void ToggleVisibility()
-        {
-            _isOpened = !_isOpened;
-
-            _root.alpha = _isOpened ? 1 : 0;
-        }
-
         private void OnConnecting()
         {
             _nicknameText.interactable = false;
@@ -89,8 +83,6 @@ namespace Assets._Project.Scripts.UI
             _disconnectButton.gameObject.SetActive(true);
 
             ToggleVisibility();
-
-            _connected = true;
         }
     }
 }

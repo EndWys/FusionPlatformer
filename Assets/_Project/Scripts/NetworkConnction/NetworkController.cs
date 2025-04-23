@@ -11,6 +11,7 @@ namespace Assets._Project.Scripts.NetworkConnction
     public enum ConnectionState
     {
         Disconnected,
+        Disconnecting,
         Connecting,
         Connected,
     }
@@ -22,11 +23,12 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         [SerializeField] private NetworkPlayerSpawner _playerSpawner;
 
-        private ConnectionState connectionState = ConnectionState.Disconnected;
+        public ConnectionState ConnectionState => _connectionState;
+        private ConnectionState _connectionState = ConnectionState.Disconnected;
 
         public async void StartGame(GameMode mode,Action OnConnected, string roomName)
         {
-            connectionState = ConnectionState.Connecting;
+            _connectionState = ConnectionState.Connecting;
 
             _runner.ProvideInput = true;
 
@@ -45,9 +47,9 @@ namespace Assets._Project.Scripts.NetworkConnction
                 SceneManager = _sceneManager
             });
 
-            connectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
+            _connectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
 
-            if(connectionState == ConnectionState.Connected)
+            if(_connectionState == ConnectionState.Connected)
                 OnConnected.Invoke();
         }
 
@@ -56,10 +58,11 @@ namespace Assets._Project.Scripts.NetworkConnction
             if (_runner == null)
                 return;
 
+            _connectionState = ConnectionState.Disconnecting;
+
             await _runner.Shutdown();
             _runner = null;
 
-            // Reset of scene network objects is needed, reload the whole scene
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
