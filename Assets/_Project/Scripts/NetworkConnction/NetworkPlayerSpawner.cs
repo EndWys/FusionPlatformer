@@ -2,9 +2,7 @@ using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.Player;
 using Fusion;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Assets._Project.Scripts.NetworkConnction
 {
@@ -18,7 +16,7 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         [Header("Respawn Points")]
         [SerializeField] private Transform _starterPoint;
-        [SerializeField] private List<FlagBehaviour> _checkpoints = new();
+        [SerializeField] private List<CheckpointBehaviour> _checkpoints = new();
 
         [Header("Spawn Settings")]
         [SerializeField] private float _spawnRadius = 3f;
@@ -36,7 +34,6 @@ namespace Assets._Project.Scripts.NetworkConnction
         {
             _localPlayer.Respawn(GetSpawnPosition(), resetCoins);
         }
-
         public void ResetCheckpoints()
         {
             _currentCheckpointIndex = -1;
@@ -58,23 +55,17 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         private void Awake()
         {
-            Debug.Log(_checkpoints.Count);
-
             for (int i = 0; i < _checkpoints.Count; i++)
             {
-                int currentIndex = i;
-                _checkpoints[i].OnFlagReached.AddListener((v) => 
-                {
-                    if (v.Id == _localPlayer.Id)
-                        OnFlagReached(currentIndex);
-                });
+                _checkpoints[i].Init(i);
+                _checkpoints[i].OnChecnkpointReached.AddListener(TryToSetCheckpoint);
             }
         }
 
-        private void OnFlagReached(int index)
+        private void TryToSetCheckpoint(int checkpointIndex)
         {
-            if(index > _currentCheckpointIndex)
-                _currentCheckpointIndex = index;
+            if (_currentCheckpointIndex < checkpointIndex)
+                _currentCheckpointIndex = checkpointIndex;
         }
     }
 }
