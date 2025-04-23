@@ -28,6 +28,9 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         public async void StartGame(GameMode mode,Action OnConnected, string roomName)
         {
+            if (ConnectionState != ConnectionState.Disconnected)
+                return;
+
             _connectionState = ConnectionState.Connecting;
 
             _runner.ProvideInput = true;
@@ -56,6 +59,9 @@ namespace Assets._Project.Scripts.NetworkConnction
         public async Task Disconnect()
         {
             if (_runner == null)
+                return;
+
+            if (ConnectionState != ConnectionState.Connected)
                 return;
 
             _connectionState = ConnectionState.Disconnecting;
