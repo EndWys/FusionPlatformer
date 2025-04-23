@@ -1,4 +1,5 @@
 using Assets._Project.Scripts.Gameplay;
+using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.Player.PlayerInput;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
@@ -7,7 +8,12 @@ using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.Player
 {
-    public class PlayerMovement : NetworkBehaviour
+    public interface IJumppadActor
+    {
+        public float CloudImpulse { get; set; }
+        public bool GroundOnCloud { get; set; }
+    }
+    public class PlayerMovement : NetworkBehaviour, IJumppadActor
     {
         [SerializeField] private SimpleKCC _kcc;
         [SerializeReference] private BasePlayerInputHandler _input;
@@ -34,6 +40,9 @@ namespace Assets._Project.Scripts.Player
 
         [Networked, OnChangedRender(nameof(OnJumpingChanged))]
         private NetworkBool _isJumping { get; set; }
+
+        public float CloudImpulse { get; set; } = 0f;
+        public bool GroundOnCloud { get; set; } = false;
 
         [HideInInspector] public UnityEvent OnFallOut;
 
@@ -97,7 +106,13 @@ namespace Assets._Project.Scripts.Player
         {
             float jumpImpulse = 0f;
 
-            if (_kcc.IsGrounded && input.Jump)
+            if (GroundOnCloud)
+            {
+                jumpImpulse = CloudImpulse;
+                _isJumping = true;
+                GroundOnCloud = false;
+            } 
+            else if (_kcc.IsGrounded && input.Jump)
             {
                 jumpImpulse = _jumpImpulse;
                 _isJumping = true;
@@ -147,6 +162,15 @@ namespace Assets._Project.Scripts.Player
                 _sounds.PlayLand();
 
             }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            if (other.TryGetComponent(out JumppadBehaviour jumppad))
+                jumppad.OnCloudLanding(this);
         }
     }
 }

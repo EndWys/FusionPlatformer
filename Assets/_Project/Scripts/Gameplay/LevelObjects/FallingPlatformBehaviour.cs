@@ -28,7 +28,7 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
 
         public override void FixedUpdateNetwork()
         {
-            if (_platformCooldown.Expired(Runner) == true)
+            if (_platformCooldown.Expired(Runner))
             {
                 if (_isActive)
                 {

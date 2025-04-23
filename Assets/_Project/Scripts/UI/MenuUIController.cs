@@ -33,6 +33,7 @@ namespace Assets._Project.Scripts.UI
 
         private void GameStartClick()
         {
+
             PlayerPrefs.SetString("PlayerName", _nicknameText.text);
 
             _networkController.StartGame(GameMode.Shared,
