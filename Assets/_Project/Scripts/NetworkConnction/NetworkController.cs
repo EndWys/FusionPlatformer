@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 namespace Assets._Project.Scripts.NetworkConnction
 {
@@ -23,7 +24,7 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         private ConnectionState connectionState = ConnectionState.Disconnected;
 
-        public async void StartGame(GameMode mode,Action OnConnectionFinished, string roomName)
+        public async void StartGame(GameMode mode,Action OnConnected, string roomName)
         {
             connectionState = ConnectionState.Connecting;
 
@@ -47,7 +48,19 @@ namespace Assets._Project.Scripts.NetworkConnction
             connectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
 
             if(connectionState == ConnectionState.Connected)
-                OnConnectionFinished.Invoke();
+                OnConnected.Invoke();
+        }
+
+        public async Task Disconnect()
+        {
+            if (_runner == null)
+                return;
+
+            await _runner.Shutdown();
+            _runner = null;
+
+            // Reset of scene network objects is needed, reload the whole scene
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
