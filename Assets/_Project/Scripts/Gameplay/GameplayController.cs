@@ -16,6 +16,7 @@ namespace Assets._Project.Scripts.Gameplay
         [SerializeField] private FlagBehaviour _flag;
 
         [Header("Settings")]
+        [SerializeField] private int _coinsForFinish = 4;
         [SerializeField] private float _gameOverTimeout = 5f;
 
         [Networked] private PlayerRef Winner { get; set; }
@@ -27,6 +28,8 @@ namespace Assets._Project.Scripts.Gameplay
             Instance = this;
 
             _flag.OnFlagReached.AddListener(OnFlagReached);
+
+            _levelUI.Init(_coinsForFinish);
         }
 
         public override void FixedUpdateNetwork()
@@ -35,6 +38,11 @@ namespace Assets._Project.Scripts.Gameplay
             {
                 ResetGame();
             }
+        }
+
+        public void OnCoinChanged(int amount)
+        {
+            _levelUI.OnCollectedCoinsChanged(amount);
         }
 
         private void ResetGame()
@@ -56,6 +64,9 @@ namespace Assets._Project.Scripts.Gameplay
             if (Winner != PlayerRef.None)
                 return;
 
+            if (player.CollectedCoins < _coinsForFinish)
+                return;
+
             OnWin(player);
         }
 
@@ -64,19 +75,19 @@ namespace Assets._Project.Scripts.Gameplay
             Winner = player.Object.StateAuthority;
             _gameOverTimer = TickTimer.CreateFromSeconds(Runner, _gameOverTimeout);
 
-            RPC_ShowWinner(true);
+            RPC_ShowWinner(true, player.Nickname);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPC_RespawnPlayer([RpcTarget] PlayerRef playerRef)
         {
-            _playerSpawner.RespawnLocalPlayer();
+            _playerSpawner.RespawnLocalPlayer(true);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_ShowWinner(bool show)
+        private void RPC_ShowWinner(bool show, string name = "")
         {
-            _levelUI.ShowWinner(show, "");
+            _levelUI.ShowWinner(show, name);
         }
     }
 }

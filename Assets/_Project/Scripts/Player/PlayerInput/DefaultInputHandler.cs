@@ -27,8 +27,8 @@ namespace Assets._Project.Scripts.Player.PlayerInput
 
         private void Update()
         {
-            //if (Cursor.lockState != CursorLockMode.Locked)
-            //    return;
+            if (Cursor.lockState != CursorLockMode.Locked)
+                return;
 
             var lookRotationDelta = new Vector2(-Input.GetAxisRaw("Mouse Y"), Input.GetAxisRaw("Mouse X"));
             _input.LookRotation = ClampLookRotation(_input.LookRotation + lookRotationDelta);

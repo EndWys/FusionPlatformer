@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 namespace Assets._Project.Scripts.NetworkConnction
 {
     public enum ConnectionState
     {
         Disconnected,
+        Disconnecting,
         Connecting,
         Connected,
     }
@@ -21,22 +23,12 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         [SerializeField] private NetworkPlayerSpawner _playerSpawner;
 
-        private ConnectionState connectionState = ConnectionState.Disconnected;
+        public ConnectionState ConnectionState => _connectionState;
+        private ConnectionState _connectionState = ConnectionState.Disconnected;
 
-        private void OnGUI()
+        public async void StartGame(GameMode mode,Action OnConnected, string roomName)
         {
-            if (connectionState != ConnectionState.Disconnected)
-                return;
-            
-            if (GUI.Button(new Rect(0, 0, 200, 40), "Join"))
-            {
-                StartGame(GameMode.Shared);
-            }
-        }
-
-        private async void StartGame(GameMode mode)
-        {
-            connectionState = ConnectionState.Connecting;
+            _connectionState = ConnectionState.Connecting;
 
             _runner.ProvideInput = true;
 
@@ -50,12 +42,28 @@ namespace Assets._Project.Scripts.NetworkConnction
             var result = await _runner.StartGame(new StartGameArgs()
             {
                 GameMode = mode,
-                SessionName = "TestRoom",
+                SessionName = roomName,
                 Scene = scene,
                 SceneManager = _sceneManager
             });
 
-            connectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
+            _connectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
+
+            if(_connectionState == ConnectionState.Connected)
+                OnConnected.Invoke();
+        }
+
+        public async Task Disconnect()
+        {
+            if (_runner == null)
+                return;
+
+            _connectionState = ConnectionState.Disconnecting;
+
+            await _runner.Shutdown();
+            _runner = null;
+
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
