@@ -24,8 +24,8 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
             if (_jumppadCooldown.IsRunning)
                 return;
 
-            actor.GroundOnCloud = true;
-            actor.CloudImpulse = _impulsePower;
+            actor.GroundOnJumppad = true;
+            actor.JumppadImpulse = _impulsePower;
 
             RPC_OnCloudGround();
 

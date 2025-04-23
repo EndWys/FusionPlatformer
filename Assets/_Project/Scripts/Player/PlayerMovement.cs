@@ -10,8 +10,8 @@ namespace Assets._Project.Scripts.Player
 {
     public interface IJumppadActor
     {
-        public float CloudImpulse { get; set; }
-        public bool GroundOnCloud { get; set; }
+        public float JumppadImpulse { get; set; }
+        public bool GroundOnJumppad { get; set; }
     }
     public class PlayerMovement : NetworkBehaviour, IJumppadActor
     {
@@ -41,8 +41,8 @@ namespace Assets._Project.Scripts.Player
         [Networked, OnChangedRender(nameof(OnJumpingChanged))]
         private NetworkBool _isJumping { get; set; }
 
-        public float CloudImpulse { get; set; } = 0f;
-        public bool GroundOnCloud { get; set; } = false;
+        public float JumppadImpulse { get; set; } = 0f;
+        public bool GroundOnJumppad { get; set; } = false;
 
         [HideInInspector] public UnityEvent OnFallOut;
 
@@ -106,11 +106,11 @@ namespace Assets._Project.Scripts.Player
         {
             float jumpImpulse = 0f;
 
-            if (GroundOnCloud)
+            if (GroundOnJumppad)
             {
-                jumpImpulse = CloudImpulse;
+                jumpImpulse = JumppadImpulse;
                 _isJumping = true;
-                GroundOnCloud = false;
+                GroundOnJumppad = false;
             } 
             else if (_kcc.IsGrounded && input.Jump)
             {
