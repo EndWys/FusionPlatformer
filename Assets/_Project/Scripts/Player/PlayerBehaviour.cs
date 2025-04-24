@@ -15,7 +15,7 @@ namespace Assets._Project.Scripts.Player
         [Networked, HideInInspector, Capacity(24), OnChangedRender(nameof(OnNicknameChanged))]
         private string _nickname { get; set; }
 
-        [Networked, OnChangedRender(nameof(OnCoinsAmountChanged))] 
+        [Networked] 
         private int _collectedCoins { get; set; }
 
         public string Nickname => _nickname;
@@ -60,6 +60,7 @@ namespace Assets._Project.Scripts.Player
             if (other.TryGetComponent(out CoinBehavour coin))
             {
                 _collectedCoins++;
+                GameplayController.Instance.OnCoinChanged(_collectedCoins);
                 coin.Collecting();
             }
 
@@ -67,11 +68,6 @@ namespace Assets._Project.Scripts.Player
             {
                 checkpoint.CheckpointReached();
             }
-        }
-
-        private void OnCoinsAmountChanged()
-        {
-            GameplayController.Instance.OnCoinChanged(_collectedCoins);
         }
 
         private void OnNicknameChanged()
