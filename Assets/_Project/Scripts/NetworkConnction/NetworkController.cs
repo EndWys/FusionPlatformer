@@ -70,6 +70,8 @@ namespace Assets._Project.Scripts.NetworkConnction
             _runner = null;
 
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+            _connectionState = ConnectionState.Disconnected;
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
