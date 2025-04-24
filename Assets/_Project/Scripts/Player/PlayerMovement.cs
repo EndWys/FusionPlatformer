@@ -79,7 +79,7 @@ namespace Assets._Project.Scripts.Player
 
         public override void Render()
         {
-            _animator.SetMovementAnimations(_kcc.RealSpeed, _kcc.IsGrounded);
+            _animator.SetMovementAnimationsAndEffects(_kcc.RealSpeed, _kcc.IsGrounded);
             _sounds.SetSoundsSettings(_kcc.RealSpeed, _sprintSpeed,_kcc.IsGrounded);
         }
 
