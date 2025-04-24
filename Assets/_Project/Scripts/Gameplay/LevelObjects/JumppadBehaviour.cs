@@ -32,6 +32,7 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
             //Prediction
             _isActive = false;
             _jumppadCooldown = TickTimer.CreateFromSeconds(Runner, _reactivationDelay);
+            OnActiveChange();
         }
 
         public override void Render()

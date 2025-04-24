@@ -21,25 +21,24 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         {
             RPC_OnCollect();
 
-            // Running timer on non-StateAuthority - prediction
+            // Prediction
+            _isActive = false;
             _activationCooldown = TickTimer.CreateFromSeconds(Runner, _coinRespawnTime);
+            OnCoinActiveChange();
         }
 
         public override void Render()
         {
-            bool isTimeExpired = _activationCooldown.ExpiredOrNotRunning(Runner);
-
-            if(isTimeExpired && !_isActive)
+            if (!_isActive && _activationCooldown.Expired(Runner))
+            {
                 _isActive = true;
-
-            if (!isTimeExpired && _isActive)
-                _isActive = false;
+                _activationCooldown = default;
+            }
         }
 
         private void OnCoinActiveChange()
         {
             _trigger.enabled = _isActive;
-
             // Show/hide coin visual
             _visualRoot.SetActive(_isActive);
         }
@@ -47,9 +46,7 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPC_OnCollect()
         {
-            if (!_isActive)
-                return;
-
+            _isActive = false;
             _activationCooldown = TickTimer.CreateFromSeconds(Runner, _coinRespawnTime);
         }
     }

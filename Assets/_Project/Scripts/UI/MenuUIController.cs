@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Fusion;
-using UnityEditor.MemoryProfiler;
 
 namespace Assets._Project.Scripts.UI
 {
