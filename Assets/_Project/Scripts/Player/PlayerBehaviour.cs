@@ -12,7 +12,6 @@ namespace Assets._Project.Scripts.Player
         [SerializeField] private PlayerMovement _movement;
         [SerializeField] private PlayerNameplate _nameplate;
 
-
         [Networked, HideInInspector, Capacity(24), OnChangedRender(nameof(OnNicknameChanged))]
         private string _nickname { get; set; }
 
@@ -62,6 +61,11 @@ namespace Assets._Project.Scripts.Player
             {
                 _collectedCoins++;
                 coin.Collecting();
+            }
+
+            if (other.TryGetComponent(out CheckpointBehaviour checkpoint))
+            {
+                checkpoint.CheckpointReached();
             }
         }
 

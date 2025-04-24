@@ -81,6 +81,7 @@ namespace Assets._Project.Scripts.Gameplay
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPC_RespawnPlayer([RpcTarget] PlayerRef playerRef)
         {
+            _playerSpawner.ResetCheckpoints();
             _playerSpawner.RespawnLocalPlayer(true);
         }
 

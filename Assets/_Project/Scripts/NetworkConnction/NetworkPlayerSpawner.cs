@@ -1,5 +1,7 @@
+using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.Player;
 using Fusion;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.NetworkConnction
@@ -11,9 +13,14 @@ namespace Assets._Project.Scripts.NetworkConnction
     public class NetworkPlayerSpawner : MonoBehaviour, IRespawner
     {
         [SerializeField] private PlayerBehaviour _playerPrefab;
+
+        [Header("Respawn Points")]
+        [SerializeField] private List<CheckpointBehaviour> _checkpoints = new();
+
         [Header("Spawn Settings")]
         [SerializeField] private float _spawnRadius = 3f;
 
+        private int _currentCheckpointIndex = 0; //No checkpoints on start
         private PlayerBehaviour _localPlayer;
 
         public void SpawnPlayer(NetworkRunner runner, PlayerRef player)
@@ -26,11 +33,33 @@ namespace Assets._Project.Scripts.NetworkConnction
         {
             _localPlayer.Respawn(GetSpawnPosition(), resetCoins);
         }
+        public void ResetCheckpoints()
+        {
+            _currentCheckpointIndex = 0;
+        }
 
         private Vector3 GetSpawnPosition()
         {
             var randomPositionOffset = Random.insideUnitCircle * _spawnRadius;
-            return transform.position + new Vector3(randomPositionOffset.x, 0, randomPositionOffset.y);
+
+            Vector3 offset = new Vector3(randomPositionOffset.x, 0, randomPositionOffset.y);
+
+            return _checkpoints[_currentCheckpointIndex].transform.position + offset;
+        }
+
+        private void Awake()
+        {
+            for (int i = 0; i < _checkpoints.Count; i++)
+            {
+                _checkpoints[i].Init(i);
+                _checkpoints[i].OnChecnkpointReached.AddListener(TryToSetCheckpoint);
+            }
+        }
+
+        private void TryToSetCheckpoint(int checkpointIndex)
+        {
+            if (_currentCheckpointIndex < checkpointIndex)
+                _currentCheckpointIndex = checkpointIndex;
         }
     }
 }
