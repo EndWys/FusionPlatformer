@@ -15,13 +15,12 @@ namespace Assets._Project.Scripts.NetworkConnction
         [SerializeField] private PlayerBehaviour _playerPrefab;
 
         [Header("Respawn Points")]
-        [SerializeField] private Transform _starterPoint;
         [SerializeField] private List<CheckpointBehaviour> _checkpoints = new();
 
         [Header("Spawn Settings")]
         [SerializeField] private float _spawnRadius = 3f;
 
-        private int _currentCheckpointIndex = -1; //No checkpoints on start
+        private int _currentCheckpointIndex = 0; //No checkpoints on start
         private PlayerBehaviour _localPlayer;
 
         public void SpawnPlayer(NetworkRunner runner, PlayerRef player)
@@ -36,7 +35,7 @@ namespace Assets._Project.Scripts.NetworkConnction
         }
         public void ResetCheckpoints()
         {
-            _currentCheckpointIndex = -1;
+            _currentCheckpointIndex = 0;
         }
 
         private Vector3 GetSpawnPosition()
@@ -45,12 +44,7 @@ namespace Assets._Project.Scripts.NetworkConnction
 
             Vector3 offset = new Vector3(randomPositionOffset.x, 0, randomPositionOffset.y);
 
-            Debug.Log(_currentCheckpointIndex);
-
-            if (_currentCheckpointIndex != -1)
-                return _checkpoints[_currentCheckpointIndex].transform.position + offset;
-                
-            return transform.position + offset;
+            return _checkpoints[_currentCheckpointIndex].transform.position + offset;
         }
 
         private void Awake()
