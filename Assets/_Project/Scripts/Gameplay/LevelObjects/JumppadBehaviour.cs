@@ -1,5 +1,6 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Player;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -46,12 +47,23 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         }
 
         private void OnActiveChange()
-        {
-            _root.SetActive(_isActive);
-            _trigger.enabled = _isActive;
+        { 
+            if (_isActive)
+            {
+                _root.SetActive(true);
 
-            if (!_isActive)
+                _root.transform.DOScale(Vector3.one, 0.2f)
+                    .OnComplete(() => _trigger.enabled = true);
+            }
+            else
+            {
+                _trigger.enabled = false;
+
                 Bus<CloudDisapearEvent>.Raise(new CloudDisapearEvent() { Posiotion = transform.position });
+
+                _root.transform.DOScale(Vector3.zero, 0.2f)
+                    .OnComplete(() => _root.SetActive(_isActive));
+            }
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
