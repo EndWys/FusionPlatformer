@@ -9,15 +9,22 @@ namespace Assets._Project.Scripts.Effects
         private void OnEnable()
         {
             Bus<CoinDisapearEvent>.OnEvent += PlayCoinSound;
+            Bus<CloudDisapearEvent>.OnEvent += PlayCloudSound;
         }
         private void OnDisable()
         {
             Bus<CoinDisapearEvent>.OnEvent -= PlayCoinSound;
+            Bus<CloudDisapearEvent>.OnEvent -= PlayCloudSound;
         }
 
         private void PlayCoinSound(CoinDisapearEvent evnt)
         {
             AudioSource.PlayClipAtPoint(_soundsData.CoinCollect, evnt.Posiotion, 1f);
+        }
+
+        private void PlayCloudSound(CloudDisapearEvent evnt)
+        {
+            AudioSource.PlayClipAtPoint(_soundsData.FallSound, evnt.Posiotion, 1f);
         }
     }
 }

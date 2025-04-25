@@ -8,5 +8,6 @@ namespace Assets._Project.Scripts.Effects
     public class VFXData : ScriptableObject
     {
         public ParticleSystem CoinParticles;
+        public ParticleSystem CloudParticles;
     }
 }

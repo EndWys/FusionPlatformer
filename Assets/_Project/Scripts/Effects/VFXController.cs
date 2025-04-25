@@ -13,17 +13,24 @@ namespace Assets._Project.Scripts.Effects
         private void OnEnable()
         {
             Bus<CoinDisapearEvent>.OnEvent += PlayCoinEffect;
+            Bus<CloudDisapearEvent>.OnEvent += PlayCloudEffect;
         }
 
         private void OnDisable()
         {
             Bus<CoinDisapearEvent>.OnEvent -= PlayCoinEffect;
+            Bus<CloudDisapearEvent>.OnEvent -= PlayCloudEffect;
         }
 
 
         private void PlayCoinEffect(CoinDisapearEvent evnt)
         {
             Play(_vfxData.CoinParticles, evnt.Posiotion, 10);
+        }
+
+        private void PlayCloudEffect(CloudDisapearEvent evnt)
+        {
+            Play(_vfxData.CloudParticles, evnt.Posiotion, 8);
         }
 
         private void Play(ParticleSystem prefab, Vector3 position, int emitCount)
@@ -38,7 +45,7 @@ namespace Assets._Project.Scripts.Effects
             }
             else
             {
-                currentParticles = Instantiate(_vfxData.CoinParticles, position, Quaternion.identity);
+                currentParticles = Instantiate(prefab, position, Quaternion.identity);
                 _chacedVFX.Add(name, currentParticles);
             }
 

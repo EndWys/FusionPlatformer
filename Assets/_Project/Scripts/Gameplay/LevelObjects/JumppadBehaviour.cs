@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Player;
 using Fusion;
 using UnityEngine;
@@ -48,6 +49,9 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         {
             _root.SetActive(_isActive);
             _trigger.enabled = _isActive;
+
+            if (!_isActive)
+                Bus<CloudDisapearEvent>.Raise(new CloudDisapearEvent() { Posiotion = transform.position });
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

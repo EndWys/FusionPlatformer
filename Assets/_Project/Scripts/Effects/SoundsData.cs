@@ -6,5 +6,6 @@ namespace Assets._Project.Scripts.Effects
     public class SoundsData : ScriptableObject
     {
         public AudioClip CoinCollect; 
+        public AudioClip FallSound;
     }
 }

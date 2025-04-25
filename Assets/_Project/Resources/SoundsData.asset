@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: SoundsData
   m_EditorClassIdentifier: 
   CoinCollect: {fileID: 8300000, guid: dc86f3bef8384e145b23fba67a4f02ad, type: 3}
+  FallSound: {fileID: 8300000, guid: 8ae46f9921f423246b211123d032f697, type: 3}
