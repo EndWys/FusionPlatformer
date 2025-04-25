@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.EventBus;
 using Fusion;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
             // Prediction
             _isActive = false;
             _activationCooldown = TickTimer.CreateFromSeconds(Runner, _coinRespawnTime);
-            OnCoinActiveChange();
+            CoinActiveChange();
         }
 
         public override void Render()
@@ -36,11 +37,18 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
             }
         }
 
-        private void OnCoinActiveChange()
+        private void CoinActiveChange()
         {
             _trigger.enabled = _isActive;
-            // Show/hide coin visual
             _visualRoot.SetActive(_isActive);
+        }
+
+        private void OnCoinActiveChange()
+        {
+            CoinActiveChange();
+
+            if (!_isActive)
+                Bus<CoinDisapearEvent>.Raise(new() { Posiotion = transform.position });
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
