@@ -46,7 +46,10 @@ namespace Assets._Project.Scripts.Player
         public void Respawn(Vector3 position, bool resetCoins)
         {
             if (resetCoins)
+            {
                 _collectedCoins = 0;
+                GameplayController.Instance.OnCoinChanged(_collectedCoins);
+            } 
 
             _movement.Respawn(position);
         }
