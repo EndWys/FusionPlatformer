@@ -48,20 +48,22 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
 
         private void OnActiveChange()
         { 
-            if (_isActive)
+            if (_isActive && !_root.activeInHierarchy)
             {
                 _root.SetActive(true);
 
                 _root.transform.DOScale(Vector3.one, 0.2f)
+                    .SetEase(Ease.OutCubic)
                     .OnComplete(() => _trigger.enabled = true);
             }
-            else
+            else if(_trigger.enabled != _isActive)
             {
                 _trigger.enabled = false;
 
                 Bus<CloudDisapearEvent>.Raise(new CloudDisapearEvent() { Posiotion = transform.position });
 
                 _root.transform.DOScale(Vector3.zero, 0.2f)
+                    .SetEase(Ease.InCubic)
                     .OnComplete(() => _root.SetActive(_isActive));
             }
         }
