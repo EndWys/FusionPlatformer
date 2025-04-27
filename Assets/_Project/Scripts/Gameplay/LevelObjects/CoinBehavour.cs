@@ -47,7 +47,9 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
             if (_isActive)
             {
                 _visualRoot.SetActive(true);
-                _visualRoot.transform.DOScale(Vector3.one, 0.2f)
+                var tr = _visualRoot.transform;
+                tr.localScale = Vector3.zero;
+                tr.DOScale(Vector3.one, 0.2f)
                     .SetEase(Ease.OutCubic)
                     .OnComplete(() => _trigger.enabled = true);
             }
