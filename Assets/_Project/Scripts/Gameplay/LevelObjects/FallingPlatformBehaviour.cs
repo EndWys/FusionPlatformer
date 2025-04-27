@@ -1,3 +1,5 @@
+using Assets._Project.Scripts.EventBus;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -62,10 +64,15 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
             {
                 // Reset fallen platform to its original position
                 _platformTransfrom.position = _originalPosition;
+
+                _platformTransfrom.localScale = Vector3.zero;
+                _platformTransfrom.DOScale(Vector3.one, 0.2f)
+                    .SetEase(Ease.OutCubic);
             }
             else
             {
                 _platformBody.AddForce(Vector3.down * 30f, ForceMode.Impulse);
+                Bus<PlatformFallEvent>.Raise(new() { Posiotion = _platformTransfrom.position});
             }
         }
 

@@ -10,11 +10,13 @@ namespace Assets._Project.Scripts.Effects
         {
             Bus<CoinDisapearEvent>.OnEvent += PlayCoinSound;
             Bus<CloudDisapearEvent>.OnEvent += PlayCloudSound;
+            Bus<PlatformFallEvent>.OnEvent += PlayPlatformFallSound;
         }
         private void OnDisable()
         {
             Bus<CoinDisapearEvent>.OnEvent -= PlayCoinSound;
             Bus<CloudDisapearEvent>.OnEvent -= PlayCloudSound;
+            Bus<PlatformFallEvent>.OnEvent -= PlayPlatformFallSound;
         }
 
         private void PlayCoinSound(CoinDisapearEvent evnt)
@@ -23,6 +25,11 @@ namespace Assets._Project.Scripts.Effects
         }
 
         private void PlayCloudSound(CloudDisapearEvent evnt)
+        {
+            AudioSource.PlayClipAtPoint(_soundsData.FallSound, evnt.Posiotion, 1f);
+        }
+
+        private void PlayPlatformFallSound(PlatformFallEvent evnt)
         {
             AudioSource.PlayClipAtPoint(_soundsData.FallSound, evnt.Posiotion, 1f);
         }
