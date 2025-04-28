@@ -18,4 +18,9 @@ namespace Assets._Project.Scripts.EventBus
     {
         public Vector3 Posiotion;
     }
+
+    public struct CheckpointReachEvent : IEvent
+    {
+        public Vector3 Posiotion;
+    }
 }

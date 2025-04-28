@@ -9,5 +9,6 @@ namespace Assets._Project.Scripts.Effects
     {
         public ParticleSystem CoinParticles;
         public ParticleSystem CloudParticles;
+        public ParticleSystem CheckpointParticles;
     }
 }

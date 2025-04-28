@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CoinParticles: {fileID: 5615958245204487770, guid: 9fe4f0266fb55df46b9ac9baad32847e, type: 3}
   CloudParticles: {fileID: 4226754333055682726, guid: 1990cacb73a681545ae1784a72836d4b, type: 3}
+  CheckpointParticles: {fileID: 5615958245204487770, guid: 197273e8fe0153446a052b0e473dd830, type: 3}

@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Player;
 using Fusion;
 using UnityEngine;

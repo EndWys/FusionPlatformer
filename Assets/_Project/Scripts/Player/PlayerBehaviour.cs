@@ -56,7 +56,6 @@ namespace Assets._Project.Scripts.Player
 
         private void OnTriggerEnter(Collider other)
         {
-            //Coins collecting
             if (!HasStateAuthority)
                 return;
 

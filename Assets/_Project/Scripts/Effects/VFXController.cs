@@ -14,12 +14,14 @@ namespace Assets._Project.Scripts.Effects
         {
             Bus<CoinDisapearEvent>.OnEvent += PlayCoinEffect;
             Bus<CloudDisapearEvent>.OnEvent += PlayCloudEffect;
+            Bus<CheckpointReachEvent>.OnEvent += PlayCheckpointEffect;
         }
 
         private void OnDisable()
         {
             Bus<CoinDisapearEvent>.OnEvent -= PlayCoinEffect;
             Bus<CloudDisapearEvent>.OnEvent -= PlayCloudEffect;
+            Bus<CheckpointReachEvent>.OnEvent -= PlayCheckpointEffect;
         }
 
 
@@ -31,6 +33,11 @@ namespace Assets._Project.Scripts.Effects
         private void PlayCloudEffect(CloudDisapearEvent evnt)
         {
             Play(_vfxData.CloudParticles, evnt.Posiotion, 8);
+        }
+
+        private void PlayCheckpointEffect(CheckpointReachEvent evnt)
+        {
+            Play(_vfxData.CheckpointParticles, evnt.Posiotion, 16);
         }
 
         private void Play(ParticleSystem prefab, Vector3 position, int emitCount)
