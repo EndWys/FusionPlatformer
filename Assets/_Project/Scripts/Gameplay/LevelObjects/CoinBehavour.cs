@@ -1,3 +1,5 @@
+using Assets._Project.Scripts.EventBus;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -21,35 +23,48 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         {
             RPC_OnCollect();
 
-            // Running timer on non-StateAuthority - prediction
+            // Prediction
+            _isActive = false;
             _activationCooldown = TickTimer.CreateFromSeconds(Runner, _coinRespawnTime);
+            OnCoinActiveChange();
         }
 
         public override void Render()
         {
-            bool isTimeExpired = _activationCooldown.ExpiredOrNotRunning(Runner);
-
-            if(isTimeExpired && !_isActive)
+            if (!_isActive && _activationCooldown.Expired(Runner))
+            {
                 _isActive = true;
-
-            if (!isTimeExpired && _isActive)
-                _isActive = false;
+                _activationCooldown = default;
+            }
         }
 
         private void OnCoinActiveChange()
         {
-            _trigger.enabled = _isActive;
+            //Active state was already chenged by local prediction
+            if (_visualRoot.activeInHierarchy == _isActive)
+                return;
 
-            // Show/hide coin visual
-            _visualRoot.SetActive(_isActive);
+            if (_isActive)
+            {
+                _visualRoot.SetActive(true);
+                var tr = _visualRoot.transform;
+                tr.localScale = Vector3.zero;
+                tr.DOScale(Vector3.one, 0.2f)
+                    .SetEase(Ease.OutCubic)
+                    .OnComplete(() => _trigger.enabled = true);
+            }
+            else
+            {
+                _trigger.enabled = false;
+                _visualRoot.SetActive(false);
+                Bus<CoinDisapearEvent>.Raise(new() { Posiotion = transform.position });
+            }
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPC_OnCollect()
         {
-            if (!_isActive)
-                return;
-
+            _isActive = false;
             _activationCooldown = TickTimer.CreateFromSeconds(Runner, _coinRespawnTime);
         }
     }

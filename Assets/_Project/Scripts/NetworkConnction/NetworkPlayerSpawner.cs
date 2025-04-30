@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.Player;
 using Fusion;
@@ -6,11 +7,7 @@ using UnityEngine;
 
 namespace Assets._Project.Scripts.NetworkConnction
 {
-    public interface IRespawner
-    {
-        public void RespawnLocalPlayer(bool resetCoins);
-    }
-    public class NetworkPlayerSpawner : MonoBehaviour, IRespawner
+    public class NetworkPlayerSpawner : MonoBehaviour
     {
         [SerializeField] private PlayerBehaviour _playerPrefab;
 
@@ -20,18 +17,27 @@ namespace Assets._Project.Scripts.NetworkConnction
         [Header("Spawn Settings")]
         [SerializeField] private float _spawnRadius = 3f;
 
-        private int _currentCheckpointIndex = 0; //No checkpoints on start
+        private int _currentCheckpointIndex = 0;
         private PlayerBehaviour _localPlayer;
 
         public void SpawnPlayer(NetworkRunner runner, PlayerRef player)
         {
             _localPlayer = runner.Spawn(_playerPrefab, GetSpawnPosition(), Quaternion.identity, player);
-            _localPlayer.Init(this);
+
+            Bus<PlayerFalloutEvent>.OnEvent += OnPlayerFall;
+
+            _localPlayer.PlaySpawnAnimation();
+        }
+
+        private void OnPlayerFall(PlayerFalloutEvent evnt)
+        {
+            RespawnLocalPlayer(resetCoins: false);
         }
 
         public void RespawnLocalPlayer(bool resetCoins)
         {
             _localPlayer.Respawn(GetSpawnPosition(), resetCoins);
+            _localPlayer.PlaySpawnAnimation();
         }
         public void ResetCheckpoints()
         {
@@ -52,14 +58,25 @@ namespace Assets._Project.Scripts.NetworkConnction
             for (int i = 0; i < _checkpoints.Count; i++)
             {
                 _checkpoints[i].Init(i);
-                _checkpoints[i].OnChecnkpointReached.AddListener(TryToSetCheckpoint);
+                _checkpoints[i].OnChecnkpointReached += TryToSetCheckpoint;
             }
         }
 
-        private void TryToSetCheckpoint(int checkpointIndex)
+        private bool TryToSetCheckpoint(int checkpointIndex)
         {
-            if (_currentCheckpointIndex < checkpointIndex)
+            bool isNextCheckpoint = _currentCheckpointIndex < checkpointIndex;
+
+            if (isNextCheckpoint)
+            {
                 _currentCheckpointIndex = checkpointIndex;
+            }
+
+            return isNextCheckpoint;
+        }
+
+        private void OnDisable()
+        {
+            Bus<PlayerFalloutEvent>.OnEvent -= OnPlayerFall;
         }
     }
 }

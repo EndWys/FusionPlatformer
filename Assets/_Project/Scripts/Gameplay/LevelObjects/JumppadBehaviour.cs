@@ -1,4 +1,6 @@
+using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Player;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -32,6 +34,7 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
             //Prediction
             _isActive = false;
             _jumppadCooldown = TickTimer.CreateFromSeconds(Runner, _reactivationDelay);
+            OnActiveChange();
         }
 
         public override void Render()
@@ -44,9 +47,25 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         }
 
         private void OnActiveChange()
-        {
-            _root.SetActive(_isActive);
-            _trigger.enabled = _isActive;
+        { 
+            if (_isActive && !_root.activeInHierarchy)
+            {
+                _root.SetActive(true);
+
+                _root.transform.DOScale(Vector3.one, 0.2f)
+                    .SetEase(Ease.OutCubic)
+                    .OnComplete(() => _trigger.enabled = true);
+            }
+            else if(_trigger.enabled != _isActive)
+            {
+                _trigger.enabled = false;
+
+                Bus<CloudDisapearEvent>.Raise(new CloudDisapearEvent() { Posiotion = transform.position });
+
+                _root.transform.DOScale(Vector3.zero, 0.2f)
+                    .SetEase(Ease.InCubic)
+                    .OnComplete(() => _root.SetActive(_isActive));
+            }
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

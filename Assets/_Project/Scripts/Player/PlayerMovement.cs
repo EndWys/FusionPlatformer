@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.Player.PlayerInput;
@@ -44,8 +45,6 @@ namespace Assets._Project.Scripts.Player
         public float JumppadImpulse { get; set; } = 0f;
         public bool GroundOnJumppad { get; set; } = false;
 
-        [HideInInspector] public UnityEvent OnFallOut;
-
         private Vector3 _moveVelocity;
 
         public override void FixedUpdateNetwork()
@@ -63,7 +62,7 @@ namespace Assets._Project.Scripts.Player
             if (_kcc.Position.y < -15f)
             {
                 // Player fell, let's respawn
-                OnFallOut.Invoke();
+                Bus<PlayerFalloutEvent>.Raise(new() { Posiotion = _kcc.Position });
             }
 
             ProcessInput(_input.CurrentInput);
@@ -79,7 +78,7 @@ namespace Assets._Project.Scripts.Player
 
         public override void Render()
         {
-            _animator.SetMovementAnimations(_kcc.RealSpeed, _kcc.IsGrounded);
+            _animator.SetMovementAnimationsAndEffects(_kcc.RealSpeed, _kcc.IsGrounded);
             _sounds.SetSoundsSettings(_kcc.RealSpeed, _sprintSpeed,_kcc.IsGrounded);
         }
 

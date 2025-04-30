@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2222348185638708504}
   - component: {fileID: 1042777574622741493}
   - component: {fileID: 5133410996400350592}
+  - component: {fileID: 5498970438711171090}
   m_Layer: 0
   m_Name: coin
   m_TagString: Untagged
@@ -83,6 +84,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5498970438711171090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5900958614973210305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 793236a057fffa14490e5cf525ed555e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 90
+  RandomizeStart: 1
 --- !u!1 &9111658443931666108
 GameObject:
   m_ObjectHideFlags: 0

@@ -48,7 +48,7 @@ namespace Assets._Project.Scripts.UI
 
         private void Update()
         {
-            if (_networkController.ConnectionState == ConnectionState.Connecting || _networkController.ConnectionState == ConnectionState.Disconnecting)
+            if (_networkController.ConnectionState != ConnectionState.Connected)
                 return;
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Escape))

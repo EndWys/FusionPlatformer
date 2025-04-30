@@ -1,12 +1,13 @@
+using Assets._Project.Scripts.EventBus;
 using Fusion;
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
     public class CheckpointBehaviour : NetworkBehaviour
     {
-        [HideInInspector] public UnityEvent<int> OnChecnkpointReached;
+        [HideInInspector] public event Func<int, bool> OnChecnkpointReached;
 
         private int _index;
 
@@ -17,7 +18,12 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
 
         public void CheckpointReached()
         {
-            OnChecnkpointReached.Invoke(_index);
+            bool isSet = OnChecnkpointReached.Invoke(_index);
+
+            if (isSet)
+            {
+                Bus<CheckpointReachEvent>.Raise(new() { Posiotion = transform.position });
+            }
         }
     }
 }
