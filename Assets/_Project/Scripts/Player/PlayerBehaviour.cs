@@ -2,6 +2,7 @@ using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.NetworkConnction;
 using Assets._Project.Scripts.UI;
+using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
@@ -11,24 +12,15 @@ namespace Assets._Project.Scripts.Player
     {
         [SerializeField] private PlayerMovement _movement;
         [SerializeField] private PlayerNameplate _nameplate;
+        [SerializeField] private Transform _modelRoot;
 
         [Networked, HideInInspector, Capacity(24), OnChangedRender(nameof(OnNicknameChanged))]
         private string _nickname { get; set; }
 
-        [Networked] 
-        private int _collectedCoins { get; set; }
+        [Networked] private int _collectedCoins { get; set; }
 
         public string Nickname => _nickname;
         public int CollectedCoins => _collectedCoins;
-
-        private IRespawner _parentSpawner;
-
-        public void Init(IRespawner spawner)
-        {
-            _parentSpawner = spawner;
-
-            _movement.OnFallOut.AddListener(() => _parentSpawner.RespawnLocalPlayer(resetCoins: false));
-        }
 
         public override void Spawned()
         {
@@ -52,6 +44,11 @@ namespace Assets._Project.Scripts.Player
             } 
 
             _movement.Respawn(position);
+        }
+
+        public void PlaySpawnAnimation()
+        {
+            _modelRoot.DOPunchScale(Vector3.one * 0.5f, 0.1f).SetEase(Ease.InOutExpo);
         }
 
         private void OnTriggerEnter(Collider other)

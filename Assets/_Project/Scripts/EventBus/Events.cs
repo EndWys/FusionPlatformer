@@ -4,6 +4,11 @@ namespace Assets._Project.Scripts.EventBus
 {
     public interface IEvent { }
 
+    public struct PlayerFalloutEvent : IEvent
+    {
+        public Vector3 Posiotion;
+    }
+
     public struct CoinDisapearEvent : IEvent
     {
         public Vector3 Posiotion;

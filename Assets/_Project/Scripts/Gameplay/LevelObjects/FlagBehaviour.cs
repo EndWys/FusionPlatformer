@@ -15,10 +15,13 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         [HideInInspector] public UnityEvent<PlayerBehaviour> OnFlagReached;
         public void WinnerReachFinish()
         {
-            _root.DOMoveY(2f, 1f).OnComplete(async () =>
+            Vector3 staterPos = _root.position;
+
+            _root.DOMoveY(2f, 1f).OnComplete(() =>
             {
-                Bus<CrownReachEvent>.Raise(new() { Posiotion = _root.position});
+                Bus<CrownReachEvent>.Raise(new() { Posiotion = _root.position });
                 _root.gameObject.SetActive(false);
+                _root.position = staterPos;
             });
         }
 
