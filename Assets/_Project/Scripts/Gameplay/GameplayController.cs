@@ -4,6 +4,7 @@ using Assets._Project.Scripts.Player;
 using Assets._Project.Scripts.UI;
 using Fusion;
 using UnityEngine;
+using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace Assets._Project.Scripts.Gameplay
 {
@@ -76,11 +77,13 @@ namespace Assets._Project.Scripts.Gameplay
             _gameOverTimer = TickTimer.CreateFromSeconds(Runner, _gameOverTimeout);
 
             RPC_ShowWinner(true, player.Nickname);
+            RPC_ShowCrownAnimation();
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPC_RespawnPlayer([RpcTarget] PlayerRef playerRef)
         {
+            _flag.EnableCrown();
             _playerSpawner.ResetCheckpoints();
             _playerSpawner.RespawnLocalPlayer(true);
         }
@@ -89,6 +92,12 @@ namespace Assets._Project.Scripts.Gameplay
         private void RPC_ShowWinner(bool show, string name = "")
         {
             _levelUI.ShowWinner(show, name);
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_ShowCrownAnimation()
+        {
+            _flag.WinnerReachFinish();
         }
     }
 }

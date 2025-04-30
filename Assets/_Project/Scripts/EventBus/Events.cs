@@ -23,4 +23,9 @@ namespace Assets._Project.Scripts.EventBus
     {
         public Vector3 Posiotion;
     }
+
+    public struct CrownReachEvent : IEvent
+    {
+        public Vector3 Posiotion;
+    }
 }

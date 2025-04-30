@@ -12,6 +12,7 @@ namespace Assets._Project.Scripts.Effects
             Bus<CloudDisapearEvent>.OnEvent += PlayCloudSound;
             Bus<PlatformFallEvent>.OnEvent += PlayPlatformFallSound;
             Bus<CheckpointReachEvent>.OnEvent += PlayCheckpointSound;
+            Bus<CrownReachEvent>.OnEvent += PlayCrowntSound;
         }
         private void OnDisable()
         {
@@ -19,6 +20,7 @@ namespace Assets._Project.Scripts.Effects
             Bus<CloudDisapearEvent>.OnEvent -= PlayCloudSound;
             Bus<PlatformFallEvent>.OnEvent -= PlayPlatformFallSound;
             Bus<CheckpointReachEvent>.OnEvent -= PlayCheckpointSound;
+            Bus<CrownReachEvent>.OnEvent -= PlayCrowntSound;
         }
 
         private void PlayCoinSound(CoinDisapearEvent evnt)
@@ -37,6 +39,11 @@ namespace Assets._Project.Scripts.Effects
         }
 
         private void PlayCheckpointSound(CheckpointReachEvent evnt)
+        {
+            AudioSource.PlayClipAtPoint(_soundsData.CoinCollect, evnt.Posiotion, 1f);
+        }
+
+        private void PlayCrowntSound(CrownReachEvent evnt)
         {
             AudioSource.PlayClipAtPoint(_soundsData.CoinCollect, evnt.Posiotion, 1f);
         }

@@ -15,6 +15,7 @@ namespace Assets._Project.Scripts.Effects
             Bus<CoinDisapearEvent>.OnEvent += PlayCoinEffect;
             Bus<CloudDisapearEvent>.OnEvent += PlayCloudEffect;
             Bus<CheckpointReachEvent>.OnEvent += PlayCheckpointEffect;
+            Bus<CrownReachEvent>.OnEvent += PlayCrownEffect;
         }
 
         private void OnDisable()
@@ -22,6 +23,7 @@ namespace Assets._Project.Scripts.Effects
             Bus<CoinDisapearEvent>.OnEvent -= PlayCoinEffect;
             Bus<CloudDisapearEvent>.OnEvent -= PlayCloudEffect;
             Bus<CheckpointReachEvent>.OnEvent -= PlayCheckpointEffect;
+            Bus<CrownReachEvent>.OnEvent -= PlayCrownEffect;
         }
 
 
@@ -38,6 +40,11 @@ namespace Assets._Project.Scripts.Effects
         private void PlayCheckpointEffect(CheckpointReachEvent evnt)
         {
             Play(_vfxData.CheckpointParticles, evnt.Posiotion, 16);
+        }
+
+        private void PlayCrownEffect(CrownReachEvent evnt)
+        {
+            Play(_vfxData.CoinParticles, evnt.Posiotion, 20);
         }
 
         private void Play(ParticleSystem prefab, Vector3 position, int emitCount)
