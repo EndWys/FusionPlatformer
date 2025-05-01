@@ -5699,9 +5699,6 @@ MonoBehaviour:
   _rotationSpeed: 12
   _groundDeceleration: 10
   _groundAcceleration: 10
-  OnFallOut:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &7413724594784011812
 MonoBehaviour:
   m_ObjectHideFlags: 0
