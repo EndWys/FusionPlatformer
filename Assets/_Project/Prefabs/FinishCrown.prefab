@@ -60,7 +60,7 @@ GameObject:
   - component: {fileID: 217472470801290945}
   - component: {fileID: 8806311284358959020}
   m_Layer: 0
-  m_Name: Flag
+  m_Name: FinishCrown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -188,6 +188,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4180172344982134858, guid: 3c88486f907502f41b186df2f0b06d5a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3906d4eeb892ebe4e96fb6e8dcac6db9, type: 2}
     - target: {fileID: 4344679454658941659, guid: 3c88486f907502f41b186df2f0b06d5a, type: 3}
       propertyPath: m_Name
       value: "\u0441rown"
