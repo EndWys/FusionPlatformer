@@ -4,7 +4,6 @@ using Assets._Project.Scripts.Player;
 using Assets._Project.Scripts.UI;
 using Fusion;
 using UnityEngine;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace Assets._Project.Scripts.Gameplay
 {
@@ -13,7 +12,7 @@ namespace Assets._Project.Scripts.Gameplay
         public static GameplayController Instance {  get; private set; }
 
         [SerializeField] private GameLevelUIController _levelUI;
-        [SerializeField] private NetworkPlayerSpawner _playerSpawner;
+        [SerializeField] private LevelRunController _runController;
         [SerializeField] private FlagBehaviour _flag;
 
         [Header("Settings")]
@@ -84,8 +83,7 @@ namespace Assets._Project.Scripts.Gameplay
         private void RPC_RespawnPlayer([RpcTarget] PlayerRef playerRef)
         {
             _flag.EnableCrown();
-            _playerSpawner.ResetCheckpoints();
-            _playerSpawner.RespawnLocalPlayer(true);
+            _runController.RespawnRunnerWithProgressReset();
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

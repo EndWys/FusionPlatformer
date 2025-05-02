@@ -8,7 +8,7 @@ namespace Assets._Project.Scripts.UI
 {
     public class MenuUIController : MonoBehaviour
     {
-        [SerializeField] private NetworkController _networkController;
+        [SerializeField] private ConnectionController _networkController;
 
         [Header("Input Fields")]
         [SerializeField] private TMP_InputField _nicknameText;

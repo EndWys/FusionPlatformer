@@ -1,82 +1,25 @@
-using Assets._Project.Scripts.EventBus;
-using Assets._Project.Scripts.Gameplay.LevelObjects;
+using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Player;
 using Fusion;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.NetworkConnction
 {
-    public class NetworkPlayerSpawner : MonoBehaviour
+    public class NetworkPlayerSpawner : SimulationBehaviour, IPlayerJoined
     {
         [SerializeField] private PlayerBehaviour _playerPrefab;
+        [SerializeField] private LevelRunController _runController;
 
-        [Header("Respawn Points")]
-        [SerializeField] private List<CheckpointBehaviour> _checkpoints = new();
-
-        [Header("Spawn Settings")]
-        [SerializeField] private float _spawnRadius = 3f;
-
-        private int _currentCheckpointIndex = 0;
         private PlayerBehaviour _localPlayer;
 
-        public void SpawnPlayer(NetworkRunner runner, PlayerRef player)
+        public void PlayerJoined(PlayerRef player)
         {
-            _localPlayer = runner.Spawn(_playerPrefab, GetSpawnPosition(), Quaternion.identity, player);
+            if (player != Runner.LocalPlayer)
+                return;
 
-            Bus<PlayerFalloutEvent>.OnEvent += OnPlayerFall;
+            _localPlayer = Runner.Spawn(_playerPrefab, inputAuthority: player);
 
-            _localPlayer.PlaySpawnAnimation();
-        }
-
-        private void OnPlayerFall(PlayerFalloutEvent evnt)
-        {
-            RespawnLocalPlayer(resetCoins: false);
-        }
-
-        public void RespawnLocalPlayer(bool resetCoins)
-        {
-            _localPlayer.Respawn(GetSpawnPosition(), resetCoins);
-            _localPlayer.PlaySpawnAnimation();
-        }
-        public void ResetCheckpoints()
-        {
-            _currentCheckpointIndex = 0;
-        }
-
-        private Vector3 GetSpawnPosition()
-        {
-            var randomPositionOffset = Random.insideUnitCircle * _spawnRadius;
-
-            Vector3 offset = new Vector3(randomPositionOffset.x, 0, randomPositionOffset.y);
-
-            return _checkpoints[_currentCheckpointIndex].transform.position + offset;
-        }
-
-        private void Awake()
-        {
-            for (int i = 0; i < _checkpoints.Count; i++)
-            {
-                _checkpoints[i].Init(i);
-                _checkpoints[i].OnChecnkpointReached += TryToSetCheckpoint;
-            }
-        }
-
-        private bool TryToSetCheckpoint(int checkpointIndex)
-        {
-            bool isNextCheckpoint = _currentCheckpointIndex < checkpointIndex;
-
-            if (isNextCheckpoint)
-            {
-                _currentCheckpointIndex = checkpointIndex;
-            }
-
-            return isNextCheckpoint;
-        }
-
-        private void OnDisable()
-        {
-            Bus<PlayerFalloutEvent>.OnEvent -= OnPlayerFall;
+            _runController.Init(_localPlayer);
         }
     }
 }
