@@ -1,9 +1,8 @@
 using Fusion;
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Threading.Tasks;
 using Unity.VisualScripting;
+using Assets._Project.Scripts.UI;
 
 namespace Assets._Project.Scripts.NetworkConnction
 {
@@ -17,13 +16,29 @@ namespace Assets._Project.Scripts.NetworkConnction
 
     public class ConnectionController : MonoBehaviour
     {
+        [SerializeField] private MenuUIController _menu;
+
         private NetworkRunner _runner;
         private NetworkSceneManagerDefault _sceneManager;
 
-        public ConnectionState ConnectionState => _connectionState;
-        private ConnectionState _connectionState = ConnectionState.Disconnected;
+        public static ConnectionState ConnectionState { get; private set; }
 
-        public async void StartGame(GameMode mode,Action OnConnected, string roomName)
+        private void Awake()
+        {
+            _menu.OnGameStartButtonClick.AddListener(OnGameStartClick);
+            _menu.OnDisconnectedButtonClick.AddListener(OnDisconnectedClick);
+        }
+
+        private void OnGameStartClick()
+        {
+            string nicknamePrefKey = "PlayerName";
+
+            PlayerPrefs.SetString(nicknamePrefKey, _menu.Nickname);
+
+            StartGame(GameMode.Shared);
+        }
+
+        private async void StartGame(GameMode mode)
         {
             _runner = gameObject.GetOrAddComponent<NetworkRunner>();
             _sceneManager = gameObject.GetOrAddComponent<NetworkSceneManagerDefault>();
@@ -31,7 +46,7 @@ namespace Assets._Project.Scripts.NetworkConnction
             if (ConnectionState != ConnectionState.Disconnected)
                 return;
 
-            _connectionState = ConnectionState.Connecting;
+            ConnectionState = ConnectionState.Connecting;
 
             _runner.ProvideInput = true;
 
@@ -45,18 +60,23 @@ namespace Assets._Project.Scripts.NetworkConnction
             var result = await _runner.StartGame(new StartGameArgs()
             {
                 GameMode = mode,
-                SessionName = roomName,
+                SessionName = _menu.RoomName,
                 Scene = scene,
                 SceneManager = _sceneManager
             });
 
-            _connectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
+            ConnectionState = result.Ok ? ConnectionState.Connected : ConnectionState.Disconnected;
 
-            if(_connectionState == ConnectionState.Connected)
-                OnConnected.Invoke();
+            if (ConnectionState == ConnectionState.Connected)
+                _menu.OnConnectedSuccessfully();
         }
 
-        public async Task Disconnect()
+        private void OnDisconnectedClick()
+        {
+            Disconnect();
+        }
+
+        public async void Disconnect()
         {
             if (_runner == null)
                 return;
@@ -64,14 +84,20 @@ namespace Assets._Project.Scripts.NetworkConnction
             if (ConnectionState != ConnectionState.Connected)
                 return;
 
-            _connectionState = ConnectionState.Disconnecting;
+            ConnectionState = ConnectionState.Disconnecting;
 
             await _runner.Shutdown();
             _runner = null;
 
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
-            _connectionState = ConnectionState.Disconnected;
+            ConnectionState = ConnectionState.Disconnected;
+        }
+
+        private void OnDisable()
+        {
+            _menu.OnGameStartButtonClick.RemoveListener(OnGameStartClick);
+            _menu.OnDisconnectedButtonClick.RemoveListener(OnDisconnectedClick);
         }
     }
 }

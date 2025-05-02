@@ -3,13 +3,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Fusion;
+using System;
+using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.UI
 {
     public class MenuUIController : MonoBehaviour
     {
-        [SerializeField] private ConnectionController _networkController;
-
         [Header("Input Fields")]
         [SerializeField] private TMP_InputField _nicknameText;
         [SerializeField] private TMP_InputField _roomText;
@@ -21,34 +21,25 @@ namespace Assets._Project.Scripts.UI
         [Header("Canvas")]
         [SerializeField] private CanvasGroup _root;
 
+        [HideInInspector] public UnityEvent OnGameStartButtonClick;
+        [HideInInspector] public UnityEvent OnDisconnectedButtonClick;
+
+        public string Nickname => _nicknameText.text;
+        public string RoomName => _roomText.text;
+
         private bool _isOpened = true;
 
         private void Awake()
         {
             _isOpened = true;
 
-            _startGameButton.onClick.AddListener(GameStartClick);
-            _disconnectButton.onClick.AddListener(DisconnectClick);
-        }
-
-        private void GameStartClick()
-        {
-
-            PlayerPrefs.SetString("PlayerName", _nicknameText.text);
-
-            _networkController.StartGame(GameMode.Shared,
-                OnConnecting, 
-                _roomText.text);
-        }
-
-        private async void DisconnectClick()
-        {
-            await _networkController.Disconnect();
+            _startGameButton.onClick.AddListener(OnGameStartButtonClick.Invoke);
+            _disconnectButton.onClick.AddListener(OnDisconnectedButtonClick.Invoke);
         }
 
         private void Update()
         {
-            if (_networkController.ConnectionState != ConnectionState.Connected)
+            if (ConnectionController.ConnectionState != ConnectionState.Connected)
                 return;
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Escape))
@@ -75,7 +66,7 @@ namespace Assets._Project.Scripts.UI
             }
         }
 
-        private void OnConnecting()
+        public void OnConnectedSuccessfully()
         {
             _nicknameText.interactable = false;
             _roomText.interactable = false;

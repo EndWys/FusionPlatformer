@@ -2582,7 +2582,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 31
+  m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -2605,6 +2605,12 @@ MonoBehaviour:
   _startGameButton: {fileID: 251933610}
   _disconnectButton: {fileID: 516904895}
   _root: {fileID: 1024839253}
+  OnGameStartButtonClick:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDisconnectedButtonClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1100367191
 GameObject:
   m_ObjectHideFlags: 0
@@ -3763,6 +3769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f3190736f202ed47837d9c6a7b1f84c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _menu: {fileID: 1024839257}
 --- !u!114 &1473187628
 MonoBehaviour:
   m_ObjectHideFlags: 0
