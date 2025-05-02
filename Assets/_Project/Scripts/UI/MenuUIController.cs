@@ -2,8 +2,6 @@ using Assets._Project.Scripts.NetworkConnction;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Fusion;
-using System;
 using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.UI
@@ -29,7 +27,7 @@ namespace Assets._Project.Scripts.UI
 
         private bool _isOpened = true;
 
-        private void Awake()
+        public void Init()
         {
             _isOpened = true;
 

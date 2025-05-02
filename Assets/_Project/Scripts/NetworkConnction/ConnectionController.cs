@@ -23,7 +23,7 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         public static ConnectionState ConnectionState { get; private set; }
 
-        private void Awake()
+        public void Init()
         {
             _menu.OnGameStartButtonClick.AddListener(OnGameStartClick);
             _menu.OnDisconnectedButtonClick.AddListener(OnDisconnectedClick);

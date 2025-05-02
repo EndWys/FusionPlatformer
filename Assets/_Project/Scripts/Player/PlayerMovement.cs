@@ -49,10 +49,7 @@ namespace Assets._Project.Scripts.Player
 
         public override void FixedUpdateNetwork()
         {
-            if (GameplayController.Instance == null)
-                return;
-
-            if (GameplayController.Instance.IsGameFinished)
+            if (MatchManager.IsMatchFinished)
             {
                 ProcessInput(default);
                 _input.ResetInput();
@@ -62,7 +59,7 @@ namespace Assets._Project.Scripts.Player
             if (_kcc.Position.y < -15f)
             {
                 // Player fell, let's respawn
-                Bus<PlayerFalloutEvent>.Raise(new() { Posiotion = _kcc.Position });
+                Bus<LevelRunnerFalloutEvent>.Raise(new() { Posiotion = _kcc.Position });
             }
 
             ProcessInput(_input.CurrentInput);

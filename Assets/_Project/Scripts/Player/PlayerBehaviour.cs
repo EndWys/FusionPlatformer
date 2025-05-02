@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.NetworkConnction;
@@ -14,13 +15,12 @@ namespace Assets._Project.Scripts.Player
         [SerializeField] private PlayerNameplate _nameplate;
         [SerializeField] private Transform _modelRoot;
 
+        [Networked] private int _collectedCoins { get; set; }
+
         [Networked, HideInInspector, Capacity(24), OnChangedRender(nameof(OnNicknameChanged))]
         private string _nickname { get; set; }
 
-        [Networked] private int _collectedCoins { get; set; }
-
         public string Nickname => _nickname;
-        public int CollectedCoins => _collectedCoins;
 
         public override void Spawned()
         {
@@ -40,7 +40,7 @@ namespace Assets._Project.Scripts.Player
             if (resetCoins)
             {
                 _collectedCoins = 0;
-                GameplayController.Instance.OnCoinChanged(_collectedCoins);
+                Bus<CoinsCountChangeEvent>.Raise(new() { Count = _collectedCoins });
             } 
 
             _movement.Respawn(position);
@@ -59,7 +59,8 @@ namespace Assets._Project.Scripts.Player
             if (other.TryGetComponent(out CoinBehavour coin))
             {
                 _collectedCoins++;
-                GameplayController.Instance.OnCoinChanged(_collectedCoins);
+                Bus<CoinsCountChangeEvent>.Raise(new() { Count = _collectedCoins });
+
                 coin.Collecting();
             }
 
@@ -75,6 +76,11 @@ namespace Assets._Project.Scripts.Player
                 return; // Do not show nickname for local player
 
             _nameplate.SetNickname(_nickname);
+        }
+
+        public bool IsEnoghtCoin(int requiredCoin)
+        {
+            return _collectedCoins >= requiredCoin;
         }
     }
 }

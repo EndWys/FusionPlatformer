@@ -4,7 +4,19 @@ namespace Assets._Project.Scripts.EventBus
 {
     public interface IEvent { }
 
-    public struct PlayerFalloutEvent : IEvent
+    public struct CoinsCountChangeEvent : IEvent
+    {
+        public int Count;
+    }
+
+    public struct SomeoneWinEvent: IEvent
+    {
+        public string WinnerName;
+    }
+
+    public struct MatchReloadEvent : IEvent { }
+
+    public struct LevelRunnerFalloutEvent : IEvent
     {
         public Vector3 Posiotion;
     }

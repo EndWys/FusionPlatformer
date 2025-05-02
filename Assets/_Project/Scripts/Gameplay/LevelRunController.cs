@@ -11,34 +11,34 @@ namespace Assets._Project.Scripts.Gameplay
         [Header("Spawn Settings")]
         [SerializeField] private float _spawnRadius = 3f;
 
-        private PlayerBehaviour _runner;
+        private PlayerBehaviour _levelRunner;
 
-        public void Init(PlayerBehaviour runner)
+        public void Init(PlayerBehaviour levelRunner)
         {
-            _runner = runner;
+            _levelRunner = levelRunner;
 
             _checkpoints.Init();
 
-            Bus<PlayerFalloutEvent>.OnEvent += OnRunnerFall;
+            Bus<LevelRunnerFalloutEvent>.OnEvent += OnLevelRunnerFall;
 
-            RespawnRunnerWithProgressReset();
+            RespawnLevelRunnerWithProgressReset();
         }
 
-        private void OnRunnerFall(PlayerFalloutEvent evnt)
+        private void OnLevelRunnerFall(LevelRunnerFalloutEvent evnt)
         {
-            RestRunnerPosition();
+            RestLevelRunnerPosition();
         }
-        private void RestRunnerPosition()
+        private void RestLevelRunnerPosition()
         {
-            _runner.Respawn(GetSpawnPosition(), false);
-            _runner.PlaySpawnAnimation();
+            _levelRunner.Respawn(GetSpawnPosition(), false);
+            _levelRunner.PlaySpawnAnimation();
         }
 
-        public void RespawnRunnerWithProgressReset()
+        public void RespawnLevelRunnerWithProgressReset()
         {
             _checkpoints.ResetCheckpoints();
-            _runner.Respawn(GetSpawnPosition(), true);
-            _runner.PlaySpawnAnimation();
+            _levelRunner.Respawn(GetSpawnPosition(), true);
+            _levelRunner.PlaySpawnAnimation();
         }
 
         private Vector3 GetSpawnPosition()
@@ -52,7 +52,7 @@ namespace Assets._Project.Scripts.Gameplay
 
         private void OnDisable()
         {
-            Bus<PlayerFalloutEvent>.OnEvent -= OnRunnerFall;
+            Bus<LevelRunnerFalloutEvent>.OnEvent -= OnLevelRunnerFall;
         }
     }
 }

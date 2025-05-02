@@ -2,7 +2,6 @@ using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Player;
 using DG.Tweening;
 using Fusion;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 

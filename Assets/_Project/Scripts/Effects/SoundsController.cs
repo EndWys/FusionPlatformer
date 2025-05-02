@@ -13,7 +13,7 @@ namespace Assets._Project.Scripts.Effects
             Bus<PlatformFallEvent>.OnEvent += PlayPlatformFallSound;
             Bus<CheckpointReachEvent>.OnEvent += PlayCheckpointSound;
             Bus<CrownReachEvent>.OnEvent += PlayCrowntSound;
-            Bus<PlayerFalloutEvent>.OnEvent += PlayPlayerFall;
+            Bus<LevelRunnerFalloutEvent>.OnEvent += PlayPlayerFall;
         }
         private void OnDisable()
         {
@@ -22,7 +22,7 @@ namespace Assets._Project.Scripts.Effects
             Bus<PlatformFallEvent>.OnEvent -= PlayPlatformFallSound;
             Bus<CheckpointReachEvent>.OnEvent -= PlayCheckpointSound;
             Bus<CrownReachEvent>.OnEvent -= PlayCrowntSound;
-            Bus<PlayerFalloutEvent>.OnEvent -= PlayPlayerFall;
+            Bus<LevelRunnerFalloutEvent>.OnEvent -= PlayPlayerFall;
         }
 
         private void PlayCoinSound(CoinDisapearEvent evnt)
@@ -50,7 +50,7 @@ namespace Assets._Project.Scripts.Effects
             AudioSource.PlayClipAtPoint(_soundsData.CoinCollect, evnt.Posiotion, 1f);
         }
 
-        private void PlayPlayerFall(PlayerFalloutEvent evnt)
+        private void PlayPlayerFall(LevelRunnerFalloutEvent evnt)
         {
             AudioSource.PlayClipAtPoint(_soundsData.FallSound, evnt.Posiotion, 1f);
         }
