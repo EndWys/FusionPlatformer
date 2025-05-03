@@ -1,8 +1,4 @@
 using Assets._Project.Scripts.EventBus;
-using Assets._Project.Scripts.Gameplay;
-using Assets._Project.Scripts.Gameplay.LevelObjects;
-using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
-using Assets._Project.Scripts.NetworkConnction;
 using Assets._Project.Scripts.UI;
 using DG.Tweening;
 using Fusion;
@@ -10,7 +6,12 @@ using UnityEngine;
 
 namespace Assets._Project.Scripts.Player
 {
-    public class PlayerBehaviour : NetworkBehaviour
+    public interface IPlayerComponent { }
+    public interface IWalletHolder : IPlayerComponent 
+    {
+        public void AddCoinsToWallet(int addedCount);
+    }
+    public class PlayerBehaviour : NetworkBehaviour, IJumppadActor, IWalletHolder
     {
         [SerializeField] private PlayerMovement _movement;
         [SerializeField] private PlayerNameplate _nameplate;
@@ -34,14 +35,6 @@ namespace Assets._Project.Scripts.Player
             // In case the nickname is already changed,
             // we need to trigger the change manually
             OnNicknameChanged();
-
-            Bus<CoinCollectedEvent>.OnEvent += OnColinCollectedAction;
-        }
-
-        private void OnColinCollectedAction(CoinCollectedEvent evnt)
-        {
-            _collectedCoins++;
-            Bus<CoinsCountChangeEvent>.Raise(new() { Count = _collectedCoins });
         }
 
         public void Respawn(Vector3 position, bool resetCoins)
@@ -68,25 +61,20 @@ namespace Assets._Project.Scripts.Player
             _nameplate.SetNickname(_nickname);
         }
 
+        public void AddCoinsToWallet(int addedCount)
+        {
+            _collectedCoins += addedCount;
+            Bus<CoinsCountChangeEvent>.Raise(new() { Count = _collectedCoins });
+        }
+
         public bool IsEnoghtCoin(int requiredCoin)
         {
             return _collectedCoins >= requiredCoin;
         }
 
-        private void OnTriggerEnter(Collider other)
+        public void BounceFromJumppad(float impulsePower)
         {
-            if (!HasStateAuthority)
-                return;
-
-            if (other.TryGetComponent(out PlayerContactLevelObject contactObject))
-            {
-                contactObject.ContactWithPlayer();
-            }
-        }
-
-        public override void Despawned(NetworkRunner runner, bool hasState)
-        {
-            Bus<CoinCollectedEvent>.OnEvent -= OnColinCollectedAction;
+            _movement.BounceFromJumppad(impulsePower);
         }
     }
 }

@@ -1,15 +1,18 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay;
-using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.Player.PlayerInput;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.Player
 {
-    public class PlayerMovement : NetworkBehaviour
+    public interface IJumppadActor : IPlayerComponent
+    {
+        public void BounceFromJumppad(float impulsePower);
+    }
+
+    public class PlayerMovement : NetworkBehaviour, IJumppadActor
     {
         [SerializeField] private SimpleKCC _kcc;
         [SerializeReference] private BasePlayerInputHandler _input;
@@ -41,17 +44,6 @@ namespace Assets._Project.Scripts.Player
 
         private float _jumppadImpulse = 0f;
         private bool _groundOnJumppad = false;
-
-        public override void Spawned()
-        {
-            Bus<FallOnJuppadEvent>.OnEvent += BounceFromJumppad;
-        }
-
-        private void BounceFromJumppad(FallOnJuppadEvent evnt)
-        {
-            _jumppadImpulse = evnt.ImpulsePower;
-            _groundOnJumppad = true;
-        }
 
         public override void FixedUpdateNetwork()
         {
@@ -151,6 +143,12 @@ namespace Assets._Project.Scripts.Player
             _kcc.Move(_moveVelocity, jumpImpulse);
         }
 
+        public void BounceFromJumppad(float impulsePower)
+        {
+            _jumppadImpulse = impulsePower;
+            _groundOnJumppad = true;
+        }
+
         private void OnJumpingChanged()
         {
             if (_isJumping)
@@ -161,11 +159,6 @@ namespace Assets._Project.Scripts.Player
             {
                 _sounds.PlayLand();
             }
-        }
-
-        public override void Despawned(NetworkRunner runner, bool hasState)
-        {
-            Bus<FallOnJuppadEvent>.OnEvent -= BounceFromJumppad;
         }
     }
 }

@@ -57,7 +57,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2219056695380383199}
   - component: {fileID: 2145101295100956144}
-  - component: {fileID: 217472470801290945}
+  - component: {fileID: 6245179333121714409}
   - component: {fileID: 8806311284358959020}
   m_Layer: 0
   m_Name: FinishCrown
@@ -105,7 +105,7 @@ CapsuleCollider:
   m_Height: 3
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &217472470801290945
+--- !u!114 &6245179333121714409
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,10 +114,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3918386252409691342}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 835c9112e7fd3604296841667acfa9b1, type: 3}
+  m_Script: {fileID: 11500000, guid: 35647f697ab2d564c9b962b477df3b3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _root: {fileID: 6036280530662476538}
+  _root: {fileID: 5570423165866306271}
   OnFlagReached:
     m_PersistentCalls:
       m_Calls: []
@@ -138,7 +138,7 @@ MonoBehaviour:
   Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 217472470801290945}
+  - {fileID: 6245179333121714409}
   ForceRemoteRenderTimeframe: 0
 --- !u!1001 &7053322389589357499
 PrefabInstance:

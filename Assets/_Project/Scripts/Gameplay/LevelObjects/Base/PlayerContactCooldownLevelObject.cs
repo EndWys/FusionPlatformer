@@ -1,9 +1,10 @@
-﻿using Fusion;
+﻿using Assets._Project.Scripts.Player;
+using Fusion;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects.Base
 {
-    public abstract class PlayerContactCooldownLevelObject : PlayerContactActivationLevelObject
+    public abstract class PlayerContactCooldownLevelObject<T> : PlayerContactActivationLevelObjectt<T> where T : IPlayerComponent
     {
         [Header("Timer")]
         [SerializeField] protected float _reactivationTime = 4f;

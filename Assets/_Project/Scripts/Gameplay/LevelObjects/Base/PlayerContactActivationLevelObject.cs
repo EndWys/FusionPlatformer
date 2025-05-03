@@ -1,22 +1,14 @@
-﻿using Fusion;
+﻿using Assets._Project.Scripts.Player;
+using Fusion;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects.Base
 {
-    public abstract class PlayerContactActivationLevelObject : PlayerContactLevelObject
+    public abstract class PlayerContactActivationLevelObjectt<T> : PlayerContactLevelObject<T> where T : IPlayerComponent
     {
         [Networked, OnChangedRender(nameof(OnStateActiveChange))]
         protected NetworkBool _isActiveInNetwork { get; set; } = true;
 
         protected abstract bool _isEnableLocaly { get; }
-
-        public override void ContactWithPlayer()
-        {
-            base.ContactWithPlayer();
-
-            ClientPredition();
-        }
-
-        protected abstract void ClientPredition();
 
         protected void OnStateActiveChange()
         {

@@ -1,11 +1,12 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
+using Assets._Project.Scripts.Player;
 using System;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
-    public class CheckpointBehaviour : PlayerContactLevelObject
+    public class CheckpointBehaviour : PlayerContactLevelObject<IPlayerComponent>
     {
         [HideInInspector] public event Func<int, bool> OnChecnkpointReached;
 

@@ -1,33 +1,26 @@
 using Assets._Project.Scripts.EventBus;
+using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
 using Assets._Project.Scripts.Player;
 using DG.Tweening;
-using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
-    public class CrownBehaviour : NetworkBehaviour
+    public class CrownBehaviour : PlayerContactLevelObject<PlayerBehaviour>
     {
         [SerializeField] private Transform _root;
 
         [HideInInspector] public UnityEvent<PlayerBehaviour> OnFlagReached;
 
-        private void OnTriggerEnter(Collider other)
+        protected override bool CheckContactCondition()
         {
-            CheckIfLevelRunnerReachFinish(other);
+            return HasStateAuthority;
         }
 
-        public void CheckIfLevelRunnerReachFinish(Collider other)
+        protected override void ContactAction()
         {
-            if (!HasStateAuthority)
-                return;
-
-            var player = other.transform.parent != null ? other.GetComponentInParent<PlayerBehaviour>() : null;
-            if (player == null)
-                return;
-
-            OnFlagReached.Invoke(player);
+            OnFlagReached.Invoke(_levelRunnerComponent);
         }
 
         public void WinnerReachFinish()

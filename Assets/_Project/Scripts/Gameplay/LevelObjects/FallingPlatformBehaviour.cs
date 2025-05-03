@@ -1,12 +1,13 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
+using Assets._Project.Scripts.Player;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
-    public class FallingPlatformBehaviour : PlayerContactCooldownLevelObject
+    public class FallingPlatformBehaviour : PlayerContactCooldownLevelObject<IPlayerComponent>
     {
         [Header("References")]
         [SerializeField] private Collider _trigger;
