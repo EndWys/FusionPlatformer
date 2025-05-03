@@ -145,9 +145,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 663c01498c656b34490d59dfca7af77d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _trigger: {fileID: 5761722574931879104}
+  _reactivationTime: 4
+  _contactTrigger: {fileID: 5761722574931879104}
   _visualRoot: {fileID: 5900958614973210305}
-  _coinRespawnTime: 5
 --- !u!114 &4622824996169760451
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,12 +9,7 @@ using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.Player
 {
-    public interface IJumppadActor
-    {
-        public float JumppadImpulse { get; set; }
-        public bool GroundOnJumppad { get; set; }
-    }
-    public class PlayerMovement : NetworkBehaviour, IJumppadActor
+    public class PlayerMovement : NetworkBehaviour
     {
         [SerializeField] private SimpleKCC _kcc;
         [SerializeReference] private BasePlayerInputHandler _input;
@@ -42,10 +37,21 @@ namespace Assets._Project.Scripts.Player
         [Networked, OnChangedRender(nameof(OnJumpingChanged))]
         private NetworkBool _isJumping { get; set; }
 
-        public float JumppadImpulse { get; set; } = 0f;
-        public bool GroundOnJumppad { get; set; } = false;
-
         private Vector3 _moveVelocity;
+
+        private float _jumppadImpulse = 0f;
+        private bool _groundOnJumppad = false;
+
+        public override void Spawned()
+        {
+            Bus<FallOnJuppadEvent>.OnEvent += BounceFromJumppad;
+        }
+
+        private void BounceFromJumppad(FallOnJuppadEvent evnt)
+        {
+            _jumppadImpulse = evnt.ImpulsePower;
+            _groundOnJumppad = true;
+        }
 
         public override void FixedUpdateNetwork()
         {
@@ -102,11 +108,11 @@ namespace Assets._Project.Scripts.Player
         {
             float jumpImpulse = 0f;
 
-            if (GroundOnJumppad)
+            if (_groundOnJumppad)
             {
-                jumpImpulse = JumppadImpulse;
+                jumpImpulse = _jumppadImpulse;
                 _isJumping = true;
-                GroundOnJumppad = false;
+                _groundOnJumppad = false;
             } 
             else if (_kcc.IsGrounded && input.Jump)
             {
@@ -145,28 +151,21 @@ namespace Assets._Project.Scripts.Player
             _kcc.Move(_moveVelocity, jumpImpulse);
         }
 
-
         private void OnJumpingChanged()
         {
             if (_isJumping)
             {
                 _sounds.PlayJump();
-
             }
             else
             {
                 _sounds.PlayLand();
-
             }
         }
 
-        private void OnTriggerEnter(Collider other)
+        public override void Despawned(NetworkRunner runner, bool hasState)
         {
-            if (!HasStateAuthority)
-                return;
-
-            if (other.TryGetComponent(out JumppadBehaviour jumppad))
-                jumppad.OnCloudLanding(this);
+            Bus<FallOnJuppadEvent>.OnEvent -= BounceFromJumppad;
         }
     }
 }

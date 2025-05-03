@@ -1,71 +1,60 @@
 using Assets._Project.Scripts.EventBus;
+using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
-    public class CoinBehavour : NetworkBehaviour
+    public class CoinBehavour : PlayerContactCooldownLevelObject
     {
         [Header("References")]
-        [SerializeField] private Collider _trigger;
+        [SerializeField] private Collider _contactTrigger;
         [SerializeField] private GameObject _visualRoot;
 
-        [Header("Timer")]
-        [SerializeField] private float _coinRespawnTime = 4f;
+        protected override bool _isEnableLocaly => _visualRoot.activeInHierarchy;
 
-        [Networked] private TickTimer _activationCooldown { get; set; }
-
-        [Networked, OnChangedRender(nameof(OnCoinActiveChange))]
-        private NetworkBool _isActive { get; set; } = true;
-
-        public void Collecting()
+        protected override bool CheckContactCondition()
         {
-            RPC_OnCollect();
-
-            // Prediction
-            _isActive = false;
-            _activationCooldown = TickTimer.CreateFromSeconds(Runner, _coinRespawnTime);
-            OnCoinActiveChange();
+            return _isActiveInNetwork && !_activationCooldownTimer.IsRunning;
         }
 
-        public override void Render()
+        protected override void ContactAction()
         {
-            if (!_isActive && _activationCooldown.Expired(Runner))
-            {
-                _isActive = true;
-                _activationCooldown = default;
-            }
-        }
-
-        private void OnCoinActiveChange()
-        {
-            //Active state was already chenged by local prediction
-            if (_visualRoot.activeInHierarchy == _isActive)
-                return;
-
-            if (_isActive)
-            {
-                _visualRoot.SetActive(true);
-                var tr = _visualRoot.transform;
-                tr.localScale = Vector3.zero;
-                tr.DOScale(Vector3.one, 0.2f)
-                    .SetEase(Ease.OutCubic)
-                    .OnComplete(() => _trigger.enabled = true);
-            }
-            else
-            {
-                _trigger.enabled = false;
-                _visualRoot.SetActive(false);
-                Bus<CoinDisapearEvent>.Raise(new() { Posiotion = transform.position });
-            }
+            Bus<CoinCollectedEvent>.Raise(new() { CoinValue = 1 });
+            RPC_CoinCollecting();
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_OnCollect()
+        private void RPC_CoinCollecting()
         {
-            _isActive = false;
-            _activationCooldown = TickTimer.CreateFromSeconds(Runner, _coinRespawnTime);
+            _isActiveInNetwork = false;
+            StartReactivationTimer();
+        }
+
+        protected override void ClientPredition()
+        {
+            _isActiveInNetwork = false;
+            StartReactivationTimer();
+            OnStateActiveChange();
+        }
+
+        protected override void BecomeActive()
+        {
+            _visualRoot.SetActive(true);
+
+            var tr = _visualRoot.transform;
+            tr.localScale = Vector3.zero;
+            tr.DOScale(Vector3.one, 0.2f)
+                .SetEase(Ease.OutCubic)
+                .OnComplete(() => _contactTrigger.enabled = true);
+        }
+
+        protected override void BecomeDiactivated()
+        {
+            _visualRoot.SetActive(false);
+            _contactTrigger.enabled = false;
+            Bus<CoinDisapearEvent>.Raise(new() { Posiotion = transform.position });
         }
     }
 }

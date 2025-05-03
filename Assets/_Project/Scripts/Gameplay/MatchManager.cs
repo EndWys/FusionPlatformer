@@ -32,7 +32,6 @@ namespace Assets._Project.Scripts.Gameplay
             Win(levelRunner);
         }
 
-
         private void Win(PlayerBehaviour levelRunner)
         {
             _winner = levelRunner.Object.StateAuthority;

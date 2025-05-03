@@ -1,78 +1,66 @@
 using Assets._Project.Scripts.EventBus;
-using Assets._Project.Scripts.Player;
+using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
-    public class JumppadBehaviour : NetworkBehaviour
+    public class JumppadBehaviour : PlayerContactCooldownLevelObject
     {
-        [SerializeField] private Collider _trigger;
-        [SerializeField] private GameObject _root;
+        [Header("References")]
+        [SerializeField] private Collider _contactTrigger;
+        [SerializeField] private GameObject _visualRoot;
 
+        [Header("Jumppad Settings")]
         [SerializeField] private float _impulsePower;
 
-        [SerializeField] private float _reactivationDelay = 1f;
 
-        [Networked, OnChangedRender(nameof(OnActiveChange))] private NetworkBool _isActive { get; set; } = true;
-        [Networked] private TickTimer _jumppadCooldown { get; set; }
+        protected override bool _isEnableLocaly => _visualRoot.activeInHierarchy && _contactTrigger.enabled;
 
-        public void OnCloudLanding(IJumppadActor actor)
+        protected override bool CheckContactCondition()
         {
-            if (!_isActive)
-                return;
-
-            if (_jumppadCooldown.IsRunning)
-                return;
-
-            actor.GroundOnJumppad = true;
-            actor.JumppadImpulse = _impulsePower;
-
-            RPC_OnCloudGround();
-
-            //Prediction
-            _isActive = false;
-            _jumppadCooldown = TickTimer.CreateFromSeconds(Runner, _reactivationDelay);
-            OnActiveChange();
+            return _isActiveInNetwork && !_activationCooldownTimer.IsRunning;
         }
 
-        public override void Render()
+        protected override void ContactAction()
         {
-            if (!_isActive && _jumppadCooldown.Expired(Runner))
-            {
-                _isActive = true;
-                _jumppadCooldown = default;
-            }
-        }
-
-        private void OnActiveChange()
-        { 
-            if (_isActive && !_root.activeInHierarchy)
-            {
-                _root.SetActive(true);
-
-                _root.transform.DOScale(Vector3.one, 0.2f)
-                    .SetEase(Ease.OutCubic)
-                    .OnComplete(() => _trigger.enabled = true);
-            }
-            else if(_trigger.enabled != _isActive)
-            {
-                _trigger.enabled = false;
-
-                Bus<CloudDisapearEvent>.Raise(new CloudDisapearEvent() { Posiotion = transform.position });
-
-                _root.transform.DOScale(Vector3.zero, 0.2f)
-                    .SetEase(Ease.InCubic)
-                    .OnComplete(() => _root.SetActive(_isActive));
-            }
+            Bus<FallOnJuppadEvent>.Raise(new() { ImpulsePower = _impulsePower });
+            RPC_JumppadDisapearing();
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_OnCloudGround()
+        private void RPC_JumppadDisapearing()
         {
-            _isActive = false;
-            _jumppadCooldown = TickTimer.CreateFromSeconds(Runner, _reactivationDelay);
+            _isActiveInNetwork = false;
+            StartReactivationTimer();
+        }
+
+        protected override void ClientPredition()
+        {
+            _isActiveInNetwork = false;
+            StartReactivationTimer();
+            OnStateActiveChange();
+        }
+
+        protected override void BecomeActive()
+        {
+            _visualRoot.SetActive(true);
+
+            _visualRoot.transform.DOScale(Vector3.one, 0.2f)
+                .SetEase(Ease.OutCubic)
+                .OnComplete(() => _contactTrigger.enabled = true);
+        }
+
+        protected override void BecomeDiactivated()
+        {
+            Bus<CloudDisapearEvent>.Raise(new CloudDisapearEvent() { Posiotion = transform.position });
+
+            _contactTrigger.enabled = false;
+
+            _visualRoot.transform.DOScale(Vector3.zero, 0.2f)
+                .SetEase(Ease.InCubic)
+                .OnComplete(() => _visualRoot.SetActive(_isActiveInNetwork));
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Assets._Project.Scripts.Gameplay
 {
     public class LevelController : NetworkBehaviour
     {
-        [SerializeField] private FlagBehaviour _finish;
+        [SerializeField] private CrownBehaviour _finish;
 
         public event Action<PlayerBehaviour> OnLevelRunnerReachFinish;
 

@@ -1,6 +1,7 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Gameplay.LevelObjects;
+using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
 using Assets._Project.Scripts.NetworkConnction;
 using Assets._Project.Scripts.UI;
 using DG.Tweening;
@@ -33,6 +34,14 @@ namespace Assets._Project.Scripts.Player
             // In case the nickname is already changed,
             // we need to trigger the change manually
             OnNicknameChanged();
+
+            Bus<CoinCollectedEvent>.OnEvent += OnColinCollectedAction;
+        }
+
+        private void OnColinCollectedAction(CoinCollectedEvent evnt)
+        {
+            _collectedCoins++;
+            Bus<CoinsCountChangeEvent>.Raise(new() { Count = _collectedCoins });
         }
 
         public void Respawn(Vector3 position, bool resetCoins)
@@ -51,25 +60,6 @@ namespace Assets._Project.Scripts.Player
             _modelRoot.DOPunchScale(Vector3.one * 0.5f, 0.1f).SetEase(Ease.InOutExpo);
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!HasStateAuthority)
-                return;
-
-            if (other.TryGetComponent(out CoinBehavour coin))
-            {
-                _collectedCoins++;
-                Bus<CoinsCountChangeEvent>.Raise(new() { Count = _collectedCoins });
-
-                coin.Collecting();
-            }
-
-            if (other.TryGetComponent(out CheckpointBehaviour checkpoint))
-            {
-                checkpoint.CheckpointReached();
-            }
-        }
-
         private void OnNicknameChanged()
         {
             if (HasStateAuthority)
@@ -81,6 +71,22 @@ namespace Assets._Project.Scripts.Player
         public bool IsEnoghtCoin(int requiredCoin)
         {
             return _collectedCoins >= requiredCoin;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            if (other.TryGetComponent(out PlayerContactLevelObject contactObject))
+            {
+                contactObject.ContactWithPlayer();
+            }
+        }
+
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            Bus<CoinCollectedEvent>.OnEvent -= OnColinCollectedAction;
         }
     }
 }

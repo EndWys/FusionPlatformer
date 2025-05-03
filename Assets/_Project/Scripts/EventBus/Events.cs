@@ -9,6 +9,11 @@ namespace Assets._Project.Scripts.EventBus
         public int Count;
     }
 
+    public struct CoinCollectedEvent : IEvent
+    {
+        public int CoinValue;
+    }
+
     public struct SomeoneWinEvent: IEvent
     {
         public string WinnerName;
@@ -44,5 +49,10 @@ namespace Assets._Project.Scripts.EventBus
     public struct CrownReachEvent : IEvent
     {
         public Vector3 Posiotion;
+    }
+
+    public struct FallOnJuppadEvent : IEvent
+    {
+        public float ImpulsePower;
     }
 }
