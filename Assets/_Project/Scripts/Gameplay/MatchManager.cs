@@ -39,7 +39,7 @@ namespace Assets._Project.Scripts.Gameplay
 
             IsMatchFinished = true;
 
-            RPC_ShowMatchFinishForAllClients(levelRunner.Nickname);
+            RPC_ShowMatchFinishForAllClients(levelRunner.GetNickname());
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

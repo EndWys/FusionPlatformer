@@ -5593,9 +5593,11 @@ GameObject:
   m_Component:
   - component: {fileID: 6445258177744672385}
   - component: {fileID: 6683216537583032228}
+  - component: {fileID: 6441517414128780108}
+  - component: {fileID: 6107877882772960831}
+  - component: {fileID: 4435168144848873475}
   - component: {fileID: 3453460018275469639}
   - component: {fileID: 8891940100098644161}
-  - component: {fileID: 6441517414128780108}
   - component: {fileID: 7413724594784011812}
   - component: {fileID: 7771203508501040270}
   - component: {fileID: 2778062504785078111}
@@ -5640,37 +5642,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _movement: {fileID: 6441517414128780108}
+  _wallet: {fileID: 4435168144848873475}
   _nameplate: {fileID: 295355792366114934}
-  _modelRoot: {fileID: 8409524382421919197}
---- !u!114 &3453460018275469639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8018530399959023869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 540fb1d491da8e9458c9c33b2b95f798, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _animator: {fileID: 4899990938898458274}
-  _dustParticle: {fileID: 8902835205983798146}
---- !u!114 &8891940100098644161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8018530399959023869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acb48824da39de948874e7b3bb31c765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _footstepSound: {fileID: 6153452127178551971}
-  _jumpAudioClip: {fileID: 8300000, guid: 5ad3848521b04434080a0af7e164dd6f, type: 3}
-  _landAudioClip: {fileID: 8300000, guid: 347d193712b16c64986423be54fb248b, type: 3}
+  _nameHolder: {fileID: 6107877882772960831}
 --- !u!114 &6441517414128780108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5699,6 +5673,61 @@ MonoBehaviour:
   _rotationSpeed: 12
   _groundDeceleration: 10
   _groundAcceleration: 10
+--- !u!114 &6107877882772960831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8018530399959023869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ec2af28f4571d4d9f0999dc0aeafc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nameplate: {fileID: 295355792366114934}
+--- !u!114 &4435168144848873475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8018530399959023869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a038ae8d83b56e408896565324f39d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3453460018275469639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8018530399959023869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 540fb1d491da8e9458c9c33b2b95f798, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 4899990938898458274}
+  _visualRoot: {fileID: 8409524382421919197}
+  _dustParticle: {fileID: 8902835205983798146}
+--- !u!114 &8891940100098644161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8018530399959023869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb48824da39de948874e7b3bb31c765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _footstepSound: {fileID: 6153452127178551971}
+  _jumpAudioClip: {fileID: 8300000, guid: 5ad3848521b04434080a0af7e164dd6f, type: 3}
+  _landAudioClip: {fileID: 8300000, guid: 347d193712b16c64986423be54fb248b, type: 3}
 --- !u!114 &7413724594784011812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5795,6 +5824,8 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 6683216537583032228}
   - {fileID: 6441517414128780108}
+  - {fileID: 6107877882772960831}
+  - {fileID: 4435168144848873475}
   - {fileID: 7771203508501040270}
   ForceRemoteRenderTimeframe: 0
 --- !u!1 &8073132671461128357

@@ -31,14 +31,12 @@ namespace Assets._Project.Scripts.Gameplay
         private void RestLevelRunnerPosition()
         {
             _levelRunner.Respawn(GetSpawnPosition(), false);
-            _levelRunner.PlaySpawnAnimation();
         }
 
         public void RespawnLevelRunnerWithProgressReset()
         {
             _checkpoints.ResetCheckpoints();
             _levelRunner.Respawn(GetSpawnPosition(), true);
-            _levelRunner.PlaySpawnAnimation();
         }
 
         private Vector3 GetSpawnPosition()

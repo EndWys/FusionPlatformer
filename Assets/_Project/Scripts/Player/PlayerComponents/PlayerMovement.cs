@@ -1,17 +1,13 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Player.PlayerInput;
+using DG.Tweening;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine;
 
-namespace Assets._Project.Scripts.Player
+namespace Assets._Project.Scripts.Player.PlayerComponents
 {
-    public interface IJumppadActor : IPlayerComponent
-    {
-        public void BounceFromJumppad(float impulsePower);
-    }
-
     public class PlayerMovement : NetworkBehaviour, IJumppadActor
     {
         [SerializeField] private SimpleKCC _kcc;
@@ -74,7 +70,7 @@ namespace Assets._Project.Scripts.Player
         public override void Render()
         {
             _animator.SetMovementAnimationsAndEffects(_kcc.RealSpeed, _kcc.IsGrounded);
-            _sounds.SetSoundsSettings(_kcc.RealSpeed, _sprintSpeed,_kcc.IsGrounded);
+            _sounds.SetSoundsSettings(_kcc.RealSpeed, _sprintSpeed, _kcc.IsGrounded);
         }
 
         public void Respawn(Vector3 position)
@@ -83,6 +79,8 @@ namespace Assets._Project.Scripts.Player
             _kcc.SetLookRotation(0f, 0f);
 
             _moveVelocity = Vector3.zero;
+
+            _animator.PlaySpawnAnimation();
         }
 
         private void LateUpdate()
@@ -105,7 +103,7 @@ namespace Assets._Project.Scripts.Player
                 jumpImpulse = _jumppadImpulse;
                 _isJumping = true;
                 _groundOnJumppad = false;
-            } 
+            }
             else if (_kcc.IsGrounded && input.Jump)
             {
                 jumpImpulse = _jumpImpulse;
