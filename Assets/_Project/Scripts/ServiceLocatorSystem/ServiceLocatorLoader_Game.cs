@@ -14,11 +14,32 @@ namespace Assets._Project.Scripts.ServiceLocatorSystem
         {
             ServiceLocator.Init();
 
+            RegisterAll();
+        }
+
+        private void RegisterAll()
+        {
+
             ServiceLocator.Instance.Register<IMatchFinisherHadler>(_matrchManager);
             ServiceLocator.Instance.Register<IRunnerRespawner>(_runController);
 
             ServiceLocator.Instance.Register<ICoinDisplay>(_gameLevelUI);
             ServiceLocator.Instance.Register<IWinnerDisplay>(_gameLevelUI);
+        }
+
+        private void OnDestroy()
+        {
+            UnregisterAll();
+        }
+
+        private void UnregisterAll()
+        {
+
+            ServiceLocator.Instance.Unregister<IMatchFinisherHadler>();
+            ServiceLocator.Instance.Unregister<IRunnerRespawner>();
+
+            ServiceLocator.Instance.Unregister<ICoinDisplay>();
+            ServiceLocator.Instance.Unregister<IWinnerDisplay>();
         }
     }
 }
