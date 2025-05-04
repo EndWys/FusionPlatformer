@@ -123,6 +123,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &59456962
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 59456963}
+  - component: {fileID: 59456964}
+  m_Layer: 0
+  m_Name: '[SERVICE_LOCATOR]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &59456963
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59456962}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &59456964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59456962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90b0ed4098995714f85feeb60244dc09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &72033479
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,11 +413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd2b9dba80a37284e9cd9cd4b504d0ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _objectsToRotate:
-  - {fileID: 317231220}
-  - {fileID: 313585982}
-  - {fileID: 2129216243}
-  - {fileID: 1851658928}
+  _objectsToRotate: []
   _randomizeStart: 1
   _speed: 90
 --- !u!1 &133203843
@@ -2755,6 +2795,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 637091a10788cb54f861f0d2f0432085, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _serviceLocatorLoader: {fileID: 59456964}
   _gameSettings: {fileID: 11400000, guid: 8c23176f5385e564aa9242084be30a99, type: 2}
   _gameUI: {fileID: 202518848}
   _menuUI: {fileID: 1024839257}
@@ -5892,6 +5933,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1068056029}
+  - {fileID: 59456963}
   - {fileID: 1473187626}
   - {fileID: 1783606202}
   - {fileID: 72033480}

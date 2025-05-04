@@ -29,9 +29,12 @@ namespace Assets._Project.Scripts.Effects
                 Transform t = rotatingObjects[i].transform;
                 _objectsToRotate[i] = t;
 
-                float randomY = Random.Range(0f, 360f);
-                Vector3 currentEuler = t.eulerAngles;
-                t.eulerAngles = new Vector3(currentEuler.x, randomY, currentEuler.z);
+                if (_randomizeStart)
+                {
+                    float randomY = Random.Range(0f, 360f);
+                    Vector3 currentEuler = t.eulerAngles;
+                    t.eulerAngles = new Vector3(currentEuler.x, randomY, currentEuler.z);
+                }
             }
 
             if (transformAccessArray.isCreated)
