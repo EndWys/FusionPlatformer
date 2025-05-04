@@ -1,17 +1,15 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
 using Assets._Project.Scripts.Player;
+using Assets._Project.Scripts.ServiceLocatorSystem;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
     public class CrownBehaviour : PlayerContactLevelObject<PlayerBehaviour>
     {
         [SerializeField] private Transform _root;
-
-        [HideInInspector] public UnityEvent<PlayerBehaviour> OnFlagReached;
 
         protected override bool CheckContactCondition()
         {
@@ -20,7 +18,7 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
 
         protected override void ContactAction()
         {
-            OnFlagReached.Invoke(_levelRunnerComponent);
+            ServiceLocator.Instance.Get<IMatchFinisherHadler>().TryToFinishMatch(_levelRunnerComponent);
         }
 
         public void WinnerReachFinish()

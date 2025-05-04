@@ -1,6 +1,7 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Player.PlayerInput;
+using Assets._Project.Scripts.ServiceLocatorSystem;
 using DG.Tweening;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
@@ -53,7 +54,7 @@ namespace Assets._Project.Scripts.Player.PlayerComponents
             if (_kcc.Position.y < -15f)
             {
                 // Player fell, let's respawn
-                Bus<LevelRunnerFalloutEvent>.Raise(new() { Posiotion = _kcc.Position });
+                ServiceLocator.Instance.Get<IRunnerRespawner>().RestLevelRunnerPosition();
             }
 
             ProcessInput(_input.CurrentInput);
@@ -136,8 +137,7 @@ namespace Assets._Project.Scripts.Player.PlayerComponents
             }
 
             _moveVelocity = Vector3.Lerp(_moveVelocity, desiredMoveVelocity, acceleration * Runner.DeltaTime);
-
-
+ 
             _kcc.Move(_moveVelocity, jumpImpulse);
         }
 

@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets._Project.Scripts.ServiceLocator
+namespace Assets._Project.Scripts.ServiceLocatorSystem
 {
     public class ServiceLocator
     {
-        public static ServiceLocator Instance { get ; private set; }
+        public static ServiceLocator Instance { get; private set; }
 
         private readonly Dictionary<Type, IService> _services = new Dictionary<Type, IService>();
 
         public static void Init()
         {
-            if(Instance == null)
+            if (Instance == null)
                 Instance = new ServiceLocator();
         }
 

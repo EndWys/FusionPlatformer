@@ -167,6 +167,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90b0ed4098995714f85feeb60244dc09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _matrchManager: {fileID: 1758396902}
+  _runController: {fileID: 1929095227}
+  _gameLevelUI: {fileID: 202518848}
 --- !u!1 &72033479
 GameObject:
   m_ObjectHideFlags: 0
@@ -4340,7 +4343,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 965c070a67d76e74c9a7c8b3030f2920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _runController: {fileID: 1929095227}
   _levelController: {fileID: 624824147}
 --- !u!114 &1758396903
 MonoBehaviour:

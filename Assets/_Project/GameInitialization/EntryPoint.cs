@@ -1,6 +1,6 @@
 using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.NetworkConnction;
-using Assets._Project.Scripts.ServiceLocator;
+using Assets._Project.Scripts.ServiceLocatorSystem;
 using Assets._Project.Scripts.UI;
 using UnityEngine;
 

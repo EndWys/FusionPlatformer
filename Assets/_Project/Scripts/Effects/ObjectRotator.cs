@@ -61,6 +61,12 @@ namespace Assets._Project.Scripts.Effects
             JobHandle handle = job.Schedule(transfromArray);
             return handle;
         }
+
+        void OnDestroy()
+        {
+            if (transformAccessArray.isCreated)
+                transformAccessArray.Dispose();
+        }
     }
 
     [BurstCompile]

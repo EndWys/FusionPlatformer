@@ -1,11 +1,22 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay;
+using Assets._Project.Scripts.ServiceLocatorSystem;
 using TMPro;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.UI
 {
-    public class GameLevelUIController : MonoBehaviour
+    public interface ICoinDisplay : IService
+    {
+        public void ChangeDisplayedCollectedCoinCount(int count);
+    }
+
+    public interface IWinnerDisplay : IService
+    {
+        public void ShowWinner(bool show, string name = "");
+    }
+
+    public class GameLevelUIController : MonoBehaviour, ICoinDisplay, IWinnerDisplay
     {
         [SerializeField] private CanvasGroup _root;
         [SerializeField] private TextMeshProUGUI _tipText;
@@ -14,23 +25,14 @@ namespace Assets._Project.Scripts.UI
 
         public void Init()
         {
-            Bus<CoinsCountChangeEvent>.OnEvent += OnCollectedCoinsChanged;
-            Bus<SomeoneWinEvent>.OnEvent += OnSomeoneWin;
-            Bus<MatchReloadEvent>.OnEvent += OnMatchReload;
-
-            OnCollectedCoinsChanged(0);
+            ChangeDisplayedCollectedCoinCount(0);
 
             ShowWinner(false);
 
             _root.alpha = 1f;
         }
 
-        private void OnCollectedCoinsChanged(CoinsCountChangeEvent evnt)
-        {
-            OnCollectedCoinsChanged(evnt.Count);
-        }
-
-        private void OnCollectedCoinsChanged(int count)
+        public void ChangeDisplayedCollectedCoinCount(int count)
         {
             int targetCoinsAmount = GameSettings.Instace.CoinsForFinish;
 
@@ -42,27 +44,10 @@ namespace Assets._Project.Scripts.UI
             _coinsText.text = $"\u00d7{count}";
         }
 
-        private void OnSomeoneWin(SomeoneWinEvent evnt)
-        {
-            ShowWinner(true, evnt.WinnerName);
-        }
-
-        private void OnMatchReload(MatchReloadEvent evnt)
-        {
-            ShowWinner(false);
-        }
-
-        private void ShowWinner(bool show, string name = "")
+        public void ShowWinner(bool show, string name = "")
         {
             _winnerText.gameObject.SetActive(show);
             _winnerText.text = $"We have a winner!\n{name}";
-        }
-
-        private void OnDisable()
-        {
-            Bus<CoinsCountChangeEvent>.OnEvent -= OnCollectedCoinsChanged;
-            Bus<SomeoneWinEvent>.OnEvent -= OnSomeoneWin;
-            Bus<MatchReloadEvent>.OnEvent -= OnMatchReload;
         }
     }
 }

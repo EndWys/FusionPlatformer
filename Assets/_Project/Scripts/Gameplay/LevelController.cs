@@ -1,7 +1,5 @@
 using Assets._Project.Scripts.Gameplay.LevelObjects;
-using Assets._Project.Scripts.Player;
 using Fusion;
-using System;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay
@@ -9,18 +7,6 @@ namespace Assets._Project.Scripts.Gameplay
     public class LevelController : NetworkBehaviour
     {
         [SerializeField] private CrownBehaviour _finish;
-
-        public event Action<PlayerBehaviour> OnLevelRunnerReachFinish;
-
-        public override void Spawned()
-        {
-            _finish.OnFlagReached.AddListener(OnFinishReach);
-        }
-
-        public void OnFinishReach(PlayerBehaviour runner)
-        {
-            OnLevelRunnerReachFinish?.Invoke(runner);
-        }
 
         public void PlayMatchFinishLevelAnimation()
         {
@@ -30,11 +16,6 @@ namespace Assets._Project.Scripts.Gameplay
         public void ResetLevelForNewMatch()
         {
             _finish.EnableCrown();
-        }
-
-        public override void Despawned(NetworkRunner runner, bool hasState)
-        {
-            _finish.OnFlagReached.RemoveListener(OnFinishReach);
         }
     }
 }

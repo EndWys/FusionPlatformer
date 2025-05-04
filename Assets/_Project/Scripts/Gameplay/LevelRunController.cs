@@ -1,10 +1,16 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Player;
+using Assets._Project.Scripts.ServiceLocatorSystem;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay
 {
-    public class LevelRunController : MonoBehaviour
+    public interface IRunnerRespawner : IService
+    {
+        public void RestLevelRunnerPosition();
+        public void RespawnLevelRunnerWithProgressReset();
+    }
+    public class LevelRunController : MonoBehaviour, IRunnerRespawner
     {
         [SerializeField] private CheckpointTracker _checkpoints;
 
@@ -19,16 +25,10 @@ namespace Assets._Project.Scripts.Gameplay
 
             _checkpoints.Init();
 
-            Bus<LevelRunnerFalloutEvent>.OnEvent += OnLevelRunnerFall;
-
             RespawnLevelRunnerWithProgressReset();
         }
 
-        private void OnLevelRunnerFall(LevelRunnerFalloutEvent evnt)
-        {
-            RestLevelRunnerPosition();
-        }
-        private void RestLevelRunnerPosition()
+        public void RestLevelRunnerPosition()
         {
             _levelRunner.Respawn(GetSpawnPosition(), false);
         }
@@ -46,11 +46,6 @@ namespace Assets._Project.Scripts.Gameplay
             Vector3 offset = new Vector3(randomPositionOffset.x, 0, randomPositionOffset.y);
 
             return _checkpoints.GetCurrentCheckpointPosition() + offset;
-        }
-
-        private void OnDisable()
-        {
-            Bus<LevelRunnerFalloutEvent>.OnEvent -= OnLevelRunnerFall;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Assets._Project.Scripts.EventBus;
+﻿using Assets._Project.Scripts.ServiceLocatorSystem;
+using Assets._Project.Scripts.UI;
 using Fusion;
 
 namespace Assets._Project.Scripts.Player.PlayerComponents
@@ -7,16 +8,23 @@ namespace Assets._Project.Scripts.Player.PlayerComponents
     {
         [Networked] private int _collectedCoins { get; set; }
 
+        private ICoinDisplay _coinDisplay;
+
+        public override void Spawned()
+        {
+            _coinDisplay = ServiceLocator.Instance.Get<ICoinDisplay>();
+        }
+
         public void AddCoinsToWallet(int addedCount)
         {
             _collectedCoins += addedCount;
-            Bus<CoinsCountChangeEvent>.Raise(new() { Count = _collectedCoins });
+            _coinDisplay.ChangeDisplayedCollectedCoinCount(_collectedCoins);
         }
 
         public void SetCoinCount(int count)
         {
             _collectedCoins = count;
-            Bus<CoinsCountChangeEvent>.Raise(new() { Count = _collectedCoins });
+            _coinDisplay.ChangeDisplayedCollectedCoinCount(_collectedCoins);
         }
 
         public bool IsEnoghtCoin(int requiredCoin)

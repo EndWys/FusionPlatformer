@@ -4,28 +4,6 @@ namespace Assets._Project.Scripts.EventBus
 {
     public interface IEvent { }
 
-    public struct CoinsCountChangeEvent : IEvent
-    {
-        public int Count;
-    }
-
-    public struct CoinCollectedEvent : IEvent
-    {
-        public int CoinValue;
-    }
-
-    public struct SomeoneWinEvent: IEvent
-    {
-        public string WinnerName;
-    }
-
-    public struct MatchReloadEvent : IEvent { }
-
-    public struct LevelRunnerFalloutEvent : IEvent
-    {
-        public Vector3 Posiotion;
-    }
-
     public struct CoinDisapearEvent : IEvent
     {
         public Vector3 Posiotion;
@@ -51,8 +29,8 @@ namespace Assets._Project.Scripts.EventBus
         public Vector3 Posiotion;
     }
 
-    public struct FallOnJuppadEvent : IEvent
+    public struct LevelRunnerFalloutEvent : IEvent
     {
-        public float ImpulsePower;
+        public Vector3 Posiotion;
     }
 }

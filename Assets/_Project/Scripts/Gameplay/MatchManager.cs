@@ -1,35 +1,36 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Player;
+using Assets._Project.Scripts.ServiceLocatorSystem;
+using Assets._Project.Scripts.UI;
 using Fusion;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay
 {
-    public class MatchManager : NetworkBehaviour
+    public interface IMatchFinisherHadler : IService
+    {
+        public bool TryToFinishMatch(PlayerBehaviour levelRunner);
+    }
+    public class MatchManager : NetworkBehaviour, IMatchFinisherHadler
     {
         public static bool IsMatchFinished = false;
 
-        [SerializeField] private LevelRunController _runController;
         [SerializeField] private LevelController _levelController;
 
         [Networked] private PlayerRef _winner { get; set; }
         [Networked] private TickTimer _matchReloadTimer { get; set; }
 
-        public override void Spawned()
+        public bool TryToFinishMatch(PlayerBehaviour levelRunner)
         {
-            _levelController.OnLevelRunnerReachFinish += TryToWin;
-        }
-
-        private void TryToWin(PlayerBehaviour levelRunner)
-        {
-
             if (_winner != PlayerRef.None)
-                return;
+                return false;
 
             if (!levelRunner.IsEnoghtCoin(GameSettings.Instace.CoinsForFinish))
-                return;
+                return false;
 
             Win(levelRunner);
+
+            return true;
         }
 
         private void Win(PlayerBehaviour levelRunner)
@@ -45,8 +46,8 @@ namespace Assets._Project.Scripts.Gameplay
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPC_ShowMatchFinishForAllClients(string name)
         {
-            Bus<SomeoneWinEvent>.Raise(new() { WinnerName = name });
             _levelController.PlayMatchFinishLevelAnimation();
+            ServiceLocator.Instance.Get<IWinnerDisplay>().ShowWinner(true, name);
         }
 
         public override void FixedUpdateNetwork()
@@ -72,14 +73,9 @@ namespace Assets._Project.Scripts.Gameplay
         private void RPC_ResetMatchForAllClients()
         {
             _levelController.ResetLevelForNewMatch();
-            _runController.RespawnLevelRunnerWithProgressReset();
 
-            Bus<MatchReloadEvent>.Raise(new());
-        }
-
-        public override void Despawned(NetworkRunner runner, bool hasState)
-        {
-            _levelController.OnLevelRunnerReachFinish -= TryToWin;
+            ServiceLocator.Instance.Get<IWinnerDisplay>().ShowWinner(false);
+            ServiceLocator.Instance.Get<IRunnerRespawner>().RespawnLevelRunnerWithProgressReset();
         }
     }
 }
