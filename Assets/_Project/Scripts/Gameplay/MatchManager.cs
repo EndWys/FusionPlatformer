@@ -1,4 +1,3 @@
-using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Player;
 using Assets._Project.Scripts.ServiceLocatorSystem;
 using Assets._Project.Scripts.UI;
@@ -9,16 +8,23 @@ namespace Assets._Project.Scripts.Gameplay
 {
     public interface IMatchFinisherHadler : IService
     {
+        public bool IsMatchFinished { get; }
         public bool TryToFinishMatch(PlayerBehaviour levelRunner);
     }
     public class MatchManager : NetworkBehaviour, IMatchFinisherHadler
     {
-        public static bool IsMatchFinished = false;
-
         [SerializeField] private LevelController _levelController;
 
         [Networked] private PlayerRef _winner { get; set; }
         [Networked] private TickTimer _matchReloadTimer { get; set; }
+
+        public bool IsMatchFinished => _isSpawned && _matchReloadTimer.IsRunning;
+
+        private bool _isSpawned = false;
+        public override void Spawned()
+        {
+            _isSpawned = true;
+        }
 
         public bool TryToFinishMatch(PlayerBehaviour levelRunner)
         {
@@ -37,8 +43,6 @@ namespace Assets._Project.Scripts.Gameplay
         {
             _winner = levelRunner.Object.StateAuthority;
             _matchReloadTimer = TickTimer.CreateFromSeconds(Runner, GameSettings.Instace.GameOverTimeout);
-
-            IsMatchFinished = true;
 
             RPC_ShowMatchFinishForAllClients(levelRunner.GetNickname());
         }
@@ -65,8 +69,6 @@ namespace Assets._Project.Scripts.Gameplay
             RPC_ResetMatchForAllClients();
 
             _matchReloadTimer = default;
-
-            IsMatchFinished = false;
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

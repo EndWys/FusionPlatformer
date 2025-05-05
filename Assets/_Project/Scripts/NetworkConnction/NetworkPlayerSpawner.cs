@@ -12,7 +12,7 @@ namespace Assets._Project.Scripts.NetworkConnction
 
         private PlayerBehaviour _localPlayer;
 
-        public void PlayerJoined(PlayerRef player)
+        public async void PlayerJoined(PlayerRef player)
         {
             if (player != Runner.LocalPlayer)
                 return;

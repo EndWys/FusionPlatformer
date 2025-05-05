@@ -3,6 +3,7 @@ using Assets._Project.Scripts.Gameplay;
 using Assets._Project.Scripts.Player.PlayerInput;
 using Assets._Project.Scripts.ServiceLocatorSystem;
 using DG.Tweening;
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine;
@@ -42,9 +43,17 @@ namespace Assets._Project.Scripts.Player.PlayerComponents
         private float _jumppadImpulse = 0f;
         private bool _groundOnJumppad = false;
 
+        private IMatchFinisherHadler _matchFinisher;
+
+        public override void Spawned()
+        {
+            _matchFinisher = ServiceLocator.Instance.Get<IMatchFinisherHadler>();
+            Debug.Log("Player Spawnerd");
+        }
+
         public override void FixedUpdateNetwork()
         {
-            if (MatchManager.IsMatchFinished)
+            if (_matchFinisher.IsMatchFinished)
             {
                 ProcessInput(default);
                 _input.ResetInput();
