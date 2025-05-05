@@ -1,80 +1,49 @@
-using Assets._Project.Scripts.Gameplay;
-using Assets._Project.Scripts.Gameplay.LevelObjects;
-using Assets._Project.Scripts.NetworkConnction;
+using Assets._Project.Scripts.Player.PlayerComponents;
 using Assets._Project.Scripts.UI;
-using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Player
 {
-    public class PlayerBehaviour : NetworkBehaviour
+    public class PlayerBehaviour : NetworkBehaviour, IJumppadActor, IWalletHolder, INicknameHolder
     {
         [SerializeField] private PlayerMovement _movement;
+        [SerializeField] private PlayerWallet _wallet;
         [SerializeField] private PlayerNameplate _nameplate;
-        [SerializeField] private Transform _modelRoot;
-
-        [Networked, HideInInspector, Capacity(24), OnChangedRender(nameof(OnNicknameChanged))]
-        private string _nickname { get; set; }
-
-        [Networked] private int _collectedCoins { get; set; }
-
-        public string Nickname => _nickname;
-        public int CollectedCoins => _collectedCoins;
-
-        public override void Spawned()
-        {
-            if (HasStateAuthority)
-            {
-                // Set player nickname that is saved in UIGameMenu
-                _nickname = PlayerPrefs.GetString("PlayerName");
-            }
-
-            // In case the nickname is already changed,
-            // we need to trigger the change manually
-            OnNicknameChanged();
-        }
+        [SerializeField] private PlayerNameHolder _nameHolder;
 
         public void Respawn(Vector3 position, bool resetCoins)
         {
             if (resetCoins)
             {
-                _collectedCoins = 0;
-                GameplayController.Instance.OnCoinChanged(_collectedCoins);
+                SetCoinCount(0);
             } 
 
             _movement.Respawn(position);
         }
 
-        public void PlaySpawnAnimation()
+        public void AddCoinsToWallet(int addedCount)
         {
-            _modelRoot.DOPunchScale(Vector3.one * 0.5f, 0.1f).SetEase(Ease.InOutExpo);
+            _wallet.AddCoinsToWallet(addedCount);
+        }
+        public void SetCoinCount(int count)
+        {
+            _wallet.SetCoinCount(count);
         }
 
-        private void OnTriggerEnter(Collider other)
+        public bool IsEnoghtCoin(int requiredCoin)
         {
-            if (!HasStateAuthority)
-                return;
-
-            if (other.TryGetComponent(out CoinBehavour coin))
-            {
-                _collectedCoins++;
-                GameplayController.Instance.OnCoinChanged(_collectedCoins);
-                coin.Collecting();
-            }
-
-            if (other.TryGetComponent(out CheckpointBehaviour checkpoint))
-            {
-                checkpoint.CheckpointReached();
-            }
+            return _wallet.IsEnoghtCoin(requiredCoin);
         }
 
-        private void OnNicknameChanged()
+        public void BounceFromJumppad(float impulsePower)
         {
-            if (HasStateAuthority)
-                return; // Do not show nickname for local player
+            _movement.BounceFromJumppad(impulsePower);
+        }
 
-            _nameplate.SetNickname(_nickname);
+        public string GetNickname()
+        {
+            return _nameHolder.GetNickname();
         }
     }
 }

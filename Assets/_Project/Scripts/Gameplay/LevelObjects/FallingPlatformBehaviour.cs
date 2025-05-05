@@ -1,97 +1,90 @@
 using Assets._Project.Scripts.EventBus;
+using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
+using Assets._Project.Scripts.Player;
 using DG.Tweening;
 using Fusion;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
-    public class FallingPlatformBehaviour : NetworkBehaviour
+    public class FallingPlatformBehaviour : PlayerContactCooldownLevelObject<IPlayerComponent>
     {
-        [Header("Time")]
-        [SerializeField] private float _fallDelay = 0.2f;
-        [SerializeField] private float _reactivationDelay = 1f;
-
         [Header("References")]
         [SerializeField] private Collider _trigger;
         [SerializeField] private Rigidbody _platformBody;
         [SerializeField] private Transform _platformTransfrom;
 
-        [Networked] private NetworkBool _isActive { get; set; } = true;
-        [Networked] private TickTimer _platformCooldown { get; set; }
+        [Header("Time")]
+        [SerializeField] private float _delayBeforeFall = 0.2f;
+
+        [Networked] protected TickTimer _delayTimer { get; set; }
 
         private Vector3 _originalPosition;
 
+        protected override bool _isEnableLocaly => _platformBody.isKinematic && _trigger.enabled;
+
         public override void Spawned()
         {
-            // Save original platform position, so we can reset position
-            // when platform gets reactivated
             _originalPosition = _platformTransfrom.position;
+        }
+
+        protected override bool CheckContactCondition()
+        {
+            return _isActiveInNetwork && !_activationCooldownTimer.IsRunning && !_delayTimer.IsRunning;
+        }
+        protected override void ContactAction()
+        {
+            RPC_StartFallDelayTimer();
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_StartFallDelayTimer()
+        {
+            _delayTimer = TickTimer.CreateFromSeconds(Runner, _delayBeforeFall);
+        }
+
+        protected override void ClientPredition()
+        {
+            _delayTimer = TickTimer.CreateFromSeconds(Runner, _delayBeforeFall);
         }
 
         public override void FixedUpdateNetwork()
         {
-            if (_platformCooldown.Expired(Runner))
+            if (_delayTimer.Expired(Runner))
             {
-                if (_isActive)
+                if (_isActiveInNetwork)
                 {
-                    // Schedule reactivation
-                    _isActive = false;
-                    _platformCooldown = TickTimer.CreateFromSeconds(Runner, _reactivationDelay);
+                    _isActiveInNetwork = false;
+                    _delayTimer = default;
+                    StartReactivationTimer();
                 }
-                else
-                {
-                    // Platform is active again
-                    _isActive = true;
-                    _platformCooldown = default;
-                }
-            }
-
-            _trigger.enabled = _isActive;
-        }
-
-        public override void Render()
-        {
-            // Check the timer to predict _isActive value
-            bool isActive = _platformCooldown.Expired(Runner) ? !_isActive : _isActive;
-
-            if (_platformBody.isKinematic == isActive)
-                return; // No changes
-
-            _platformBody.isKinematic = isActive;
-            _trigger.enabled = isActive;
-
-            if (isActive)
-            {
-                // Reset fallen platform to its original position
-                _platformTransfrom.position = _originalPosition;
-
-                _platformTransfrom.localScale = Vector3.zero;
-                _platformTransfrom.DOScale(Vector3.one, 0.2f)
-                    .SetEase(Ease.OutCubic);
-            }
-            else
-            {
-                _platformBody.AddForce(Vector3.down * 30f, ForceMode.Impulse);
-                Bus<PlatformFallEvent>.Raise(new() { Posiotion = _platformTransfrom.position});
             }
         }
 
-        private void OnTriggerEnter(Collider other)
+        protected override void BecomeActive()
         {
-            // Platforms falling is initiated only on state authority
-            if (!HasStateAuthority)
-                return;
+            _platformBody.isKinematic = true;
 
-            if (!_isActive)
-                return;
+            // Reset fallen platform to its original position
+            _platformTransfrom.position = _originalPosition;
 
-            if (_platformCooldown.IsRunning)
-                return;//Already falling
+            _platformTransfrom.localScale = Vector3.zero;
+            _platformTransfrom.DOScale(Vector3.one, 0.2f)
+                .SetEase(Ease.OutCubic)
+                .OnComplete(() =>
+                {
+                    _trigger.enabled = true;
+                }); 
+        }
 
-            if (other.gameObject.layer != LayerMask.NameToLayer("Player"))
-                return;
+        protected override void BecomeDiactivated()
+        {
+            _platformBody.isKinematic = false;
+            _trigger.enabled = false;
 
-            _platformCooldown = TickTimer.CreateFromSeconds(Runner, _fallDelay);
+            Bus<PlatformFallEvent>.Raise(new() { Posiotion = _platformTransfrom.position });
+
+            _platformBody.AddForce(Vector3.down * 30f, ForceMode.Impulse);
         }
     }
 }

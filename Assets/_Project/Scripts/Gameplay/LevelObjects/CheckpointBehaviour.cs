@@ -1,11 +1,12 @@
 using Assets._Project.Scripts.EventBus;
-using Fusion;
+using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
+using Assets._Project.Scripts.Player;
 using System;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
-    public class CheckpointBehaviour : NetworkBehaviour
+    public class CheckpointBehaviour : PlayerContactLevelObject<IPlayerComponent>
     {
         [HideInInspector] public event Func<int, bool> OnChecnkpointReached;
 
@@ -16,14 +17,14 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
             _index = index;
         }
 
-        public void CheckpointReached()
+        protected override bool CheckContactCondition()
         {
-            bool isSet = OnChecnkpointReached.Invoke(_index);
+            return OnChecnkpointReached.Invoke(_index);
+        }
 
-            if (isSet)
-            {
-                Bus<CheckpointReachEvent>.Raise(new() { Posiotion = transform.position });
-            }
+        protected override void ContactAction()
+        {
+            Bus<CheckpointReachEvent>.Raise(new() { Posiotion = transform.position });
         }
     }
 }

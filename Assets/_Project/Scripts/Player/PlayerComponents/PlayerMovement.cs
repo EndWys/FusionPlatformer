@@ -1,19 +1,15 @@
 using Assets._Project.Scripts.EventBus;
 using Assets._Project.Scripts.Gameplay;
-using Assets._Project.Scripts.Gameplay.LevelObjects;
 using Assets._Project.Scripts.Player.PlayerInput;
+using Assets._Project.Scripts.ServiceLocatorSystem;
+using DG.Tweening;
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine;
-using UnityEngine.Events;
 
-namespace Assets._Project.Scripts.Player
+namespace Assets._Project.Scripts.Player.PlayerComponents
 {
-    public interface IJumppadActor
-    {
-        public float JumppadImpulse { get; set; }
-        public bool GroundOnJumppad { get; set; }
-    }
     public class PlayerMovement : NetworkBehaviour, IJumppadActor
     {
         [SerializeField] private SimpleKCC _kcc;
@@ -42,17 +38,22 @@ namespace Assets._Project.Scripts.Player
         [Networked, OnChangedRender(nameof(OnJumpingChanged))]
         private NetworkBool _isJumping { get; set; }
 
-        public float JumppadImpulse { get; set; } = 0f;
-        public bool GroundOnJumppad { get; set; } = false;
-
         private Vector3 _moveVelocity;
+
+        private float _jumppadImpulse = 0f;
+        private bool _groundOnJumppad = false;
+
+        private IMatchFinisherHadler _matchFinisher;
+
+        public override void Spawned()
+        {
+            _matchFinisher = ServiceLocator.Instance.Get<IMatchFinisherHadler>();
+            Debug.Log("Player Spawnerd");
+        }
 
         public override void FixedUpdateNetwork()
         {
-            if (GameplayController.Instance == null)
-                return;
-
-            if (GameplayController.Instance.IsGameFinished)
+            if (_matchFinisher.IsMatchFinished)
             {
                 ProcessInput(default);
                 _input.ResetInput();
@@ -62,7 +63,7 @@ namespace Assets._Project.Scripts.Player
             if (_kcc.Position.y < -15f)
             {
                 // Player fell, let's respawn
-                Bus<PlayerFalloutEvent>.Raise(new() { Posiotion = _kcc.Position });
+                ServiceLocator.Instance.Get<IRunnerRespawner>().RestLevelRunnerPosition();
             }
 
             ProcessInput(_input.CurrentInput);
@@ -79,7 +80,7 @@ namespace Assets._Project.Scripts.Player
         public override void Render()
         {
             _animator.SetMovementAnimationsAndEffects(_kcc.RealSpeed, _kcc.IsGrounded);
-            _sounds.SetSoundsSettings(_kcc.RealSpeed, _sprintSpeed,_kcc.IsGrounded);
+            _sounds.SetSoundsSettings(_kcc.RealSpeed, _sprintSpeed, _kcc.IsGrounded);
         }
 
         public void Respawn(Vector3 position)
@@ -88,6 +89,8 @@ namespace Assets._Project.Scripts.Player
             _kcc.SetLookRotation(0f, 0f);
 
             _moveVelocity = Vector3.zero;
+
+            _animator.PlaySpawnAnimation();
         }
 
         private void LateUpdate()
@@ -105,12 +108,12 @@ namespace Assets._Project.Scripts.Player
         {
             float jumpImpulse = 0f;
 
-            if (GroundOnJumppad)
+            if (_groundOnJumppad)
             {
-                jumpImpulse = JumppadImpulse;
+                jumpImpulse = _jumppadImpulse;
                 _isJumping = true;
-                GroundOnJumppad = false;
-            } 
+                _groundOnJumppad = false;
+            }
             else if (_kcc.IsGrounded && input.Jump)
             {
                 jumpImpulse = _jumpImpulse;
@@ -143,33 +146,26 @@ namespace Assets._Project.Scripts.Player
             }
 
             _moveVelocity = Vector3.Lerp(_moveVelocity, desiredMoveVelocity, acceleration * Runner.DeltaTime);
-
-
+ 
             _kcc.Move(_moveVelocity, jumpImpulse);
         }
 
+        public void BounceFromJumppad(float impulsePower)
+        {
+            _jumppadImpulse = impulsePower;
+            _groundOnJumppad = true;
+        }
 
         private void OnJumpingChanged()
         {
             if (_isJumping)
             {
                 _sounds.PlayJump();
-
             }
             else
             {
                 _sounds.PlayLand();
-
             }
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!HasStateAuthority)
-                return;
-
-            if (other.TryGetComponent(out JumppadBehaviour jumppad))
-                jumppad.OnCloudLanding(this);
         }
     }
 }

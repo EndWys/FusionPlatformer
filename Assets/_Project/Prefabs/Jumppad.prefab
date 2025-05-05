@@ -47,8 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cca005be5a488e4184ff2b7c4df8871, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _trigger: {fileID: 4450080660568244328}
-  _root: {fileID: 2436434557231309507}
+  _reactivationTime: 4
+  _contactTrigger: {fileID: 4450080660568244328}
+  _visualRoot: {fileID: 2436434557231309507}
   _impulsePower: 20
   _reactivationDelay: 3
 --- !u!65 &4450080660568244328

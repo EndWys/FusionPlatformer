@@ -1,18 +1,26 @@
 using Assets._Project.Scripts.EventBus;
+using Assets._Project.Scripts.Gameplay.LevelObjects.Base;
 using Assets._Project.Scripts.Player;
+using Assets._Project.Scripts.ServiceLocatorSystem;
 using DG.Tweening;
-using Fusion;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Assets._Project.Scripts.Gameplay.LevelObjects
 {
-    public class FlagBehaviour : NetworkBehaviour
+    public class CrownBehaviour : PlayerContactLevelObject<PlayerBehaviour>
     {
         [SerializeField] private Transform _root;
 
-        [HideInInspector] public UnityEvent<PlayerBehaviour> OnFlagReached;
+        protected override bool CheckContactCondition()
+        {
+            return HasStateAuthority;
+        }
+
+        protected override void ContactAction()
+        {
+            ServiceLocator.Instance.Get<IMatchFinisherHadler>().TryToFinishMatch(_levelRunnerComponent);
+        }
+
         public void WinnerReachFinish()
         {
             Vector3 staterPos = _root.position;
@@ -28,19 +36,6 @@ namespace Assets._Project.Scripts.Gameplay.LevelObjects
         public void EnableCrown()
         {
             _root.gameObject.SetActive(true);
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            // Flag check is triggered only on state authority
-            if (!HasStateAuthority)
-                return;
-
-            var player = other.transform.parent != null ? other.GetComponentInParent<PlayerBehaviour>() : null;
-            if (player != null)
-            {
-                OnFlagReached.Invoke(player);
-            }
         }
     }
 }
